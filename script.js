@@ -1,15 +1,17 @@
 // Variables to store state
-let currentDice = []; 
-let isWillpowerSpent = false; // Tracks if user clicked the "Add Success" button
+let diceBatches = []; // Array of Arrays: [ [Original], [Explosion 1], [Explosion 2] ]
+let isWillpowerSpent = false; 
+let pendingExplosions = 0; 
 
 // DOM Elements
 const rollBtn = document.getElementById('rollBtn');
 const wpSpendBtn = document.getElementById('wpSpendBtn');
-const postRollActions = document.getElementById('postRollActions');
+const explodeBtn = document.getElementById('explodeBtn'); 
 const diceContainer = document.getElementById('diceContainer');
 const resultText = document.getElementById('resultText');
 const dicePoolInput = document.getElementById('dicePool');
 const difficultyInput = document.getElementById('difficulty');
+const specialtyToggle = document.getElementById('specialtyToggle');
 
 // --- Event Listeners ---
 
@@ -22,41 +24,77 @@ wpSpendBtn.addEventListener('click', () => {
     spendWillpower();
 });
 
+explodeBtn.addEventListener('click', () => {
+    triggerExplosion();
+});
+
+specialtyToggle.addEventListener('change', () => {
+    if (diceBatches.length > 0) {
+        calculateResults();
+    }
+});
+
 // --- Core Functions ---
 
 function startNewRoll(pool) {
-    // 1. Generate Random Dice
-    currentDice = [];
+    diceBatches = []; 
+    isWillpowerSpent = false;
+    pendingExplosions = 0;
+
+    // Create First Batch (Original Roll)
+    const firstBatch = [];
     for (let i = 0; i < pool; i++) {
-        currentDice.push(rollD10());
+        firstBatch.push(rollD10());
     }
+    diceBatches.push(firstBatch);
 
-    // 2. Reset State
-    isWillpowerSpent = false; 
-
-    // 3. Reset UI
-    postRollActions.classList.remove('hidden'); // Show the WP button
-    
-    // Reset WP Button to "Ready" state
+    // Reset UI
+    wpSpendBtn.classList.remove('hidden');
     wpSpendBtn.classList.remove('active');
     wpSpendBtn.innerText = "Spend Willpower (+1 Success)";
-    wpSpendBtn.disabled = false; // Re-enable the button for the new roll
-
-    // 4. Render & Calc
+    wpSpendBtn.disabled = false; 
+    
+    checkForExplosions(firstBatch);
     renderDice();
     calculateResults();
 }
 
-function spendWillpower() {
-    // 1. Set state to spent
-    isWillpowerSpent = true;
+function triggerExplosion() {
+    if (pendingExplosions <= 0) return;
 
-    // 2. Lock the button immediately
+    // Roll new dice
+    const newBatch = [];
+    for (let i = 0; i < pendingExplosions; i++) {
+        newBatch.push(rollD10());
+    }
+    diceBatches.push(newBatch);
+
+    // Reset explosion button
+    explodeBtn.classList.add('hidden');
+    pendingExplosions = 0;
+
+    checkForExplosions(newBatch);
+    renderDice();
+    calculateResults();
+}
+
+function checkForExplosions(batch) {
+    let tensCount = batch.filter(val => val === 10).length;
+
+    if (tensCount > 0) {
+        pendingExplosions = tensCount;
+        explodeBtn.innerText = `CRITICAL! Reroll (${pendingExplosions})`;
+        explodeBtn.classList.remove('hidden');
+    } else {
+        explodeBtn.classList.add('hidden');
+    }
+}
+
+function spendWillpower() {
+    isWillpowerSpent = true;
     wpSpendBtn.classList.add('active');
     wpSpendBtn.innerText = "Willpower Spent (+1 Success)";
-    wpSpendBtn.disabled = true; // PREVENTS removing it
-
-    // 3. Re-render to show the ghost die and update math
+    wpSpendBtn.disabled = true; 
     renderDice();
     calculateResults();
 }
@@ -65,65 +103,86 @@ function rollD10() {
     return Math.floor(Math.random() * 10) + 1;
 }
 
+// --- Rendering Logic (Updated) ---
+
 function renderDice() {
     diceContainer.innerHTML = ''; 
 
-    // 1. Render Rolled Dice
-    currentDice.forEach((value) => {
-        const die = document.createElement('div');
-        die.classList.add('die');
-        die.innerText = value;
-
-        // Colors for 1s and 10s
-        if (value === 10) die.classList.add('ten');
-        if (value === 1) die.classList.add('one');
+    diceBatches.forEach((batch, batchIndex) => {
         
-        die.style.cursor = "default";
+        // Add separator if this is an explosion batch (Index > 0)
+        if (batchIndex > 0) {
+            const separator = document.createElement('div');
+            separator.classList.add('batch-separator');
+            diceContainer.appendChild(separator);
+        }
 
-        diceContainer.appendChild(die);
+        // Create the row
+        const rowDiv = document.createElement('div');
+        rowDiv.classList.add('dice-batch');
+
+        // Render dice in this batch
+        batch.forEach(value => {
+            const die = document.createElement('div');
+            die.classList.add('die');
+            die.innerText = value;
+
+            if (value === 10) die.classList.add('ten');
+            if (value === 1) die.classList.add('one');
+            
+            rowDiv.appendChild(die);
+        });
+
+        // --- NEW LOCATION ---
+        // If this is the FIRST batch (batchIndex === 0) AND Willpower is spent,
+        // add the Ghost Die right here in the same row.
+        if (batchIndex === 0 && isWillpowerSpent) {
+            const autoDie = document.createElement('div');
+            autoDie.classList.add('die', 'auto-success');
+            autoDie.innerHTML = "AUTO<br>SUCC";
+            rowDiv.appendChild(autoDie);
+        }
+
+        diceContainer.appendChild(rowDiv);
     });
-
-    // 2. Render Auto Success Die (if active)
-    if (isWillpowerSpent) {
-        const autoDie = document.createElement('div');
-        autoDie.classList.add('die', 'auto-success');
-        autoDie.innerHTML = "AUTO<br>SUCC";
-        diceContainer.appendChild(autoDie);
-    }
 }
+
+// --- Calculation Logic ---
 
 function calculateResults() {
     const difficulty = parseInt(difficultyInput.value) || 6;
+    const isSpecialty = specialtyToggle.checked; 
     
+    // Flatten all batches into one list for calculation
+    const allDice = diceBatches.flat();
+
     let rawSuccesses = 0;
     let onesCount = 0;
     let tenCount = 0;
 
-    // Scan the rolled dice
-    currentDice.forEach(val => {
+    allDice.forEach(val => {
         if (val >= difficulty) rawSuccesses++;
         if (val === 1) onesCount++;
         if (val === 10) tenCount++;
     });
 
-    // Rule: Pairs of 10s add +1 success
-    const critBonus = Math.floor(tenCount / 2);
+    let critBonus = 0;
+
+    if (isSpecialty) {
+        // Specialty Rule: Every 10 counts as 2 successes (+1 bonus)
+        critBonus = tenCount; 
+    } else {
+        critBonus = 0; 
+    }
     
-    // Rule: Willpower adds 1 automatic success
     const wpBonus = isWillpowerSpent ? 1 : 0;
 
-    // Total Calculation
-    // (Rolled Successes + Crit Bonus + Auto Success) - Ones
     let totalSuccesses = (rawSuccesses + critBonus + wpBonus) - onesCount;
 
-    // --- Result Text Logic ---
     let outcomeHTML = '';
 
-    // Blunder Check logic for W20:
-    // If we have 0 raw successes, rolled 1s, and DID NOT spend willpower -> BOTCH
-    // Spending WP gives you a success, effectively preventing the Botch.
     if (rawSuccesses === 0 && onesCount > 0 && !isWillpowerSpent) {
-        outcomeHTML = `<span class="blunder-text">BLUNDER!</span>`;
+        outcomeHTML = `<span class="blunder-text">BOTCH!</span>`;
     } 
     else if (totalSuccesses > 0) {
         outcomeHTML = `<span class="success-text">${totalSuccesses} Success${totalSuccesses > 1 ? 'es' : ''}</span>`;
