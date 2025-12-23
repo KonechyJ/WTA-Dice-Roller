@@ -1,15 +1,13 @@
 // Variables to store state
 let currentDice = []; 
-let selectedIndices = new Set(); 
-let canSelect = false; // NEW: Tracks if we are allowed to select dice
-let hasRerolled = false; // NEW: Tracks if we have used our one reroll
+let isWillpowerSpent = false; // Tracks if user clicked the "Add Success" button
 
 // DOM Elements
 const rollBtn = document.getElementById('rollBtn');
-const rerollBtn = document.getElementById('rerollBtn');
+const wpSpendBtn = document.getElementById('wpSpendBtn');
+const postRollActions = document.getElementById('postRollActions');
 const diceContainer = document.getElementById('diceContainer');
 const resultText = document.getElementById('resultText');
-const rerollSection = document.getElementById('rerollSection');
 const dicePoolInput = document.getElementById('dicePool');
 const difficultyInput = document.getElementById('difficulty');
 
@@ -20,47 +18,47 @@ rollBtn.addEventListener('click', () => {
     startNewRoll(pool);
 });
 
-rerollBtn.addEventListener('click', () => {
-    handleRerollButtonClick();
+wpSpendBtn.addEventListener('click', () => {
+    spendWillpower();
 });
 
 // --- Core Functions ---
 
 function startNewRoll(pool) {
-    // 1. Generate random numbers
+    // 1. Generate Random Dice
     currentDice = [];
     for (let i = 0; i < pool; i++) {
         currentDice.push(rollD10());
     }
 
     // 2. Reset State
-    selectedIndices.clear();
-    canSelect = false;       // Dice are locked by default
-    hasRerolled = false;     // Reset reroll tracking
-    
-    // 3. Reset Button State
-    rerollSection.classList.remove('hidden');
-    rerollBtn.innerText = "Willpower Reroll";
-    rerollBtn.disabled = false; // Button is active immediately to START the process
-    rerollBtn.classList.remove('secondary-btn-confirm'); // Remove styling if added
+    isWillpowerSpent = false; 
 
-    // 4. Render and Calculate
+    // 3. Reset UI
+    postRollActions.classList.remove('hidden'); // Show the WP button
+    
+    // Reset WP Button to "Ready" state
+    wpSpendBtn.classList.remove('active');
+    wpSpendBtn.innerText = "Spend Willpower (+1 Success)";
+    wpSpendBtn.disabled = false; // Re-enable the button for the new roll
+
+    // 4. Render & Calc
     renderDice();
     calculateResults();
 }
 
-function handleRerollButtonClick() {
-    // Phase 1: Activate Selection Mode
-    if (!canSelect && !hasRerolled) {
-        canSelect = true; // Unlock the dice
-        rerollBtn.innerText = "Confirm Reroll (Select Dice First)";
-        rerollBtn.disabled = true; // Disable until at least one die is picked
-        renderDice(); // Re-render to show hover effects (cursor change)
-    } 
-    // Phase 2: Execute the Reroll
-    else if (canSelect && selectedIndices.size > 0) {
-        executeReroll();
-    }
+function spendWillpower() {
+    // 1. Set state to spent
+    isWillpowerSpent = true;
+
+    // 2. Lock the button immediately
+    wpSpendBtn.classList.add('active');
+    wpSpendBtn.innerText = "Willpower Spent (+1 Success)";
+    wpSpendBtn.disabled = true; // PREVENTS removing it
+
+    // 3. Re-render to show the ghost die and update math
+    renderDice();
+    calculateResults();
 }
 
 function rollD10() {
@@ -70,74 +68,29 @@ function rollD10() {
 function renderDice() {
     diceContainer.innerHTML = ''; 
 
-    currentDice.forEach((value, index) => {
+    // 1. Render Rolled Dice
+    currentDice.forEach((value) => {
         const die = document.createElement('div');
         die.classList.add('die');
         die.innerText = value;
 
-        // Visual coloring
+        // Colors for 1s and 10s
         if (value === 10) die.classList.add('ten');
         if (value === 1) die.classList.add('one');
-
-        // Selection styling
-        if (selectedIndices.has(index)) {
-            die.classList.add('selected');
-        }
-
-        // Interaction Logic
-        // Only allow clicking if 'canSelect' is true
-        if (canSelect) {
-            die.style.cursor = "pointer"; // Show hand cursor
-            die.addEventListener('click', () => {
-                toggleSelection(index);
-            });
-        } else {
-            die.style.cursor = "default"; // Show arrow cursor
-        }
+        
+        die.style.cursor = "default";
 
         diceContainer.appendChild(die);
     });
-}
 
-function toggleSelection(index) {
-    if (selectedIndices.has(index)) {
-        selectedIndices.delete(index);
-    } else {
-        selectedIndices.add(index);
+    // 2. Render Auto Success Die (if active)
+    if (isWillpowerSpent) {
+        const autoDie = document.createElement('div');
+        autoDie.classList.add('die', 'auto-success');
+        autoDie.innerHTML = "AUTO<br>SUCC";
+        diceContainer.appendChild(autoDie);
     }
-
-    // Update Button Text based on selection
-    if (selectedIndices.size > 0) {
-        rerollBtn.innerText = "Confirm Reroll";
-        rerollBtn.disabled = false;
-    } else {
-        rerollBtn.innerText = "Confirm Reroll (Select Dice First)";
-        rerollBtn.disabled = true;
-    }
-
-    renderDice(); 
 }
-
-function executeReroll() {
-    // Reroll only selected
-    selectedIndices.forEach(index => {
-        currentDice[index] = rollD10();
-    });
-
-    // Lock everything down
-    selectedIndices.clear();
-    canSelect = false;
-    hasRerolled = true; // Mark as used
-
-    // Update Button to "Used" state
-    rerollBtn.innerText = "Reroll Used";
-    rerollBtn.disabled = true;
-
-    renderDice();
-    calculateResults();
-}
-
-// --- Mechanics Logic (Same as before) ---
 
 function calculateResults() {
     const difficulty = parseInt(difficultyInput.value) || 6;
@@ -146,18 +99,30 @@ function calculateResults() {
     let onesCount = 0;
     let tenCount = 0;
 
+    // Scan the rolled dice
     currentDice.forEach(val => {
         if (val >= difficulty) rawSuccesses++;
         if (val === 1) onesCount++;
         if (val === 10) tenCount++;
     });
 
+    // Rule: Pairs of 10s add +1 success
     const critBonus = Math.floor(tenCount / 2);
-    let totalSuccesses = (rawSuccesses + critBonus) - onesCount;
+    
+    // Rule: Willpower adds 1 automatic success
+    const wpBonus = isWillpowerSpent ? 1 : 0;
 
+    // Total Calculation
+    // (Rolled Successes + Crit Bonus + Auto Success) - Ones
+    let totalSuccesses = (rawSuccesses + critBonus + wpBonus) - onesCount;
+
+    // --- Result Text Logic ---
     let outcomeHTML = '';
 
-    if (rawSuccesses === 0 && onesCount > 0) {
+    // Blunder Check logic for W20:
+    // If we have 0 raw successes, rolled 1s, and DID NOT spend willpower -> BOTCH
+    // Spending WP gives you a success, effectively preventing the Botch.
+    if (rawSuccesses === 0 && onesCount > 0 && !isWillpowerSpent) {
         outcomeHTML = `<span class="blunder-text">BLUNDER!</span>`;
     } 
     else if (totalSuccesses > 0) {
@@ -169,3 +134,9 @@ function calculateResults() {
 
     resultText.innerHTML = outcomeHTML;
 }
+
+/* ======================================================
+   LEGACY REROLL CODE (Commented Out)
+   ======================================================
+   ... (kept commented out as before) ...
+====================================================== */

@@ -135,6 +135,7 @@ input {
     font-size: 1.1rem;
     border-radius: 5px;
     cursor: pointer;
+    width: 100%; /* Make full width for better mobile touch */
 }
 
 .secondary-btn:disabled {
@@ -144,4 +145,22 @@ input {
 
 .secondary-btn:not(:disabled):hover {
     background-color: #777;
+}
+
+/* --- NEW ADDITIONS FOR WILLPOWER --- */
+
+/* Auto Success Die (Blue Box) */
+.die.auto-success {
+    border-color: #42a5f5;
+    color: #42a5f5;
+    font-size: 0.8rem; /* Smaller text for "AUTO" */
+    line-height: 1.1;
+    text-align: center;
+}
+
+/* Active State for Willpower Button */
+.secondary-btn.active {
+    background-color: #1976d2; /* Blue background */
+    color: white;
+    border: 2px solid #64b5f6;
 }
