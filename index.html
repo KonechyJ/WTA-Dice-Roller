@@ -20,19 +20,24 @@
                 <label for="difficulty">Difficulty</label>
                 <input type="number" id="difficulty" value="6" min="2" max="10">
             </div>
+            <div class="input-group">
+                <label for="specialtyToggle" style="font-size: 0.9rem;">Specialty?</label>
+                <input type="checkbox" id="specialtyToggle" style="width: 20px; height: 20px; margin-top: 10px; cursor: pointer;">
+            </div>
         </div>
 
         <button id="rollBtn" class="primary-btn">ROLL</button>
 
         <div id="resultText" class="result-text"></div>
         
-        <div id="diceContainer" class="dice-container"></div>
+        <div id="diceContainer" class="dice-container-wrapper"></div>
 
-        <div id="postRollActions" class="hidden">
-            <button id="wpSpendBtn" class="secondary-btn">Spend Willpower (+1 Success)</button>
+        <div class="action-row">
+            <button id="wpSpendBtn" class="secondary-btn hidden">Spend Willpower (+1 Success)</button>
+            
+            <button id="explodeBtn" class="explode-btn hidden">CRITICAL! Reroll (0)</button>
         </div>
-
-        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
