@@ -1,0 +1,147 @@
+:root {
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-color: #ffffff;
+    --accent: #d32f2f; /* Red for emphasis */
+    --die-bg: #444;
+    --die-selected: #ffd700; /* Gold for selected dice */
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input {
+    padding: 10px;
+    font-size: 1.2rem;
+    width: 60px;
+    text-align: center;
+    border-radius: 5px;
+    border: none;
+    margin-top: 5px;
+}
+
+.primary-btn {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.primary-btn:hover {
+    background-color: #b71c1c;
+}
+
+/* Results */
+.result-text {
+    margin: 20px 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    min-height: 1.5em;
+}
+
+.success-text { color: #4caf50; }
+.failure-text { color: #bdbdbd; }
+.blunder-text { color: #ff5252; }
+
+/* Dice Styling */
+.dice-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.die {
+    width: 50px;
+    height: 50px;
+    background-color: var(--die-bg);
+    border: 2px solid #555;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s;
+}
+
+.die:hover {
+    transform: scale(1.1);
+}
+
+/* Numbers logic styling */
+.die.ten { color: #4caf50; border-color: #4caf50; } /* 10s are green */
+.die.one { color: #ff5252; border-color: #ff5252; } /* 1s are red */
+
+/* Selection State */
+.die.selected {
+    background-color: var(--die-selected);
+    color: black;
+    border-color: white;
+    box-shadow: 0 0 10px var(--die-selected);
+}
+
+/* Reroll Section */
+.hidden { display: none; }
+
+.instruction {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.secondary-btn {
+    background-color: #555;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.secondary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.secondary-btn:not(:disabled):hover {
+    background-color: #777;
+}
