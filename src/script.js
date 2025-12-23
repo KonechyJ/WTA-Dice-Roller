@@ -136,7 +136,48 @@ function calculateResults() {
 }
 
 /* ======================================================
-   LEGACY REROLL CODE (Commented Out)
+   LEGACY REROLL CODE (Commented Out as requested)
    ======================================================
-   ... (kept commented out as before) ...
+
+let selectedIndices = new Set(); 
+let canSelect = false; 
+let hasRerolled = false;
+const rerollBtn = document.getElementById('rerollBtn');
+const rerollSection = document.getElementById('rerollSection');
+
+// Event Listener
+// rerollBtn.addEventListener('click', () => { handleRerollButtonClick(); });
+
+function handleRerollButtonClick() {
+    if (!canSelect && !hasRerolled) {
+        canSelect = true; 
+        rerollBtn.innerText = "Confirm Reroll (Select Dice First)";
+        rerollBtn.disabled = true; 
+        renderDice(); 
+    } 
+    else if (canSelect && selectedIndices.size > 0) {
+        executeReroll();
+    }
+}
+
+function toggleSelection(index) {
+    if (selectedIndices.has(index)) {
+        selectedIndices.delete(index);
+    } else {
+        selectedIndices.add(index);
+    }
+    // Update button...
+    renderDice(); 
+}
+
+function executeReroll() {
+    selectedIndices.forEach(index => {
+        currentDice[index] = rollD10();
+    });
+    selectedIndices.clear();
+    canSelect = false;
+    hasRerolled = true; 
+    renderDice();
+    calculateResults();
+}
 ====================================================== */
