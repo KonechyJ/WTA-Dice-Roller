@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werewolf The Apopocalypse V20 - Dice Roller</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Werewolf The Apopocalypse V20 - Dice Roller</h1>
+
+        <div class="controls">
+            <div class="input-group">
+                <label for="dicePool">Dice Pool</label>
+                <input type="number" id="dicePool" value="1" min="1" max="20">
+            </div>
+            <div class="input-group">
+                <label for="difficulty">Difficulty</label>
+                <input type="number" id="difficulty" value="6" min="2" max="10">
+            </div>
+        </div>
+
+        <button id="rollBtn" class="primary-btn">ROLL</button>
+
+        <div id="resultText" class="result-text"></div>
+        
+        <div id="diceContainer" class="dice-container"></div>
+
+        <div id="postRollActions" class="hidden">
+            <button id="wpSpendBtn" class="secondary-btn">Spend Willpower (+1 Success)</button>
+        </div>
+
+        </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
