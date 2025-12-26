@@ -79,12 +79,11 @@ function triggerExplosion() {
 }
 
 function checkForExplosions(batch) {
-    // NEW LOGIC: 1s cancel 10s for the purpose of exploding
+    // LOGIC: 1s cancel 10s for the purpose of exploding
     let tens = batch.filter(val => val === 10).length;
     let ones = batch.filter(val => val === 1).length;
 
     // Net 10s = (Total 10s) - (Total 1s)
-    // We use Math.max(0, ...) so we don't get negative numbers
     let netTens = Math.max(0, tens - ones);
 
     if (netTens > 0) {
@@ -151,7 +150,7 @@ function renderDice() {
     });
 }
 
-// --- Calculation Logic (UPDATED) ---
+// --- Calculation Logic (FIXED) ---
 
 function calculateResults() {
     const difficulty = parseInt(difficultyInput.value) || 6;
@@ -163,7 +162,7 @@ function calculateResults() {
     // 1. Tally up the raw counts
     let tensCount = 0;
     let onesCount = 0;
-    let otherSuccesses = 0; // Successes that are NOT 10s (e.g. 7, 8, 9)
+    let otherSuccesses = 0; 
 
     allDice.forEach(val => {
         if (val === 10) {
@@ -176,39 +175,40 @@ function calculateResults() {
         }
     });
 
-    // 2. Cancellation Phase: 1s cancel 10s FIRST
-    // Find how many pairs exist
-    const cancelledCount = Math.min(tensCount, onesCount);
+    // 2. Determine "Unpaired" 1s
+    // A 1 is "paired" if it matched with a 10 to stop an explosion.
+    // Paired 1s do NOT remove successes (per your instruction).
+    // Unpaired 1s DO remove successes.
+    const unpairedOnes = Math.max(0, onesCount - tensCount);
 
-    // Calculate what is left after cancellation
-    const activeTens = tensCount - cancelledCount;
-    const activeOnes = onesCount - cancelledCount;
-
-    // 3. Score the Active 10s
+    // 3. Score the 10s
+    // Your instruction: 10s count for success based on the ORIGINAL amount.
+    // A 10 that was stopped from exploding still counts as a success here.
     let tenSuccessValue = 0;
     if (isSpecialty) {
-        tenSuccessValue = activeTens * 2; // Specialty: 10s = 2 successes
+        tenSuccessValue = tensCount * 2; // Specialty: All 10s = 2 successes
     } else {
-        tenSuccessValue = activeTens * 1; // Normal: 10s = 1 success
+        tenSuccessValue = tensCount * 1; // Normal: All 10s = 1 success
     }
 
     // 4. Willpower
     const wpBonus = isWillpowerSpent ? 1 : 0;
 
     // 5. Final Sum
-    // (Normal Successes + Active 10s + WP) - (Remaining 1s)
-    let totalSuccesses = (otherSuccesses + tenSuccessValue + wpBonus) - activeOnes;
+    // (Other Successes + Value of All 10s + WP) - (Only Unpaired 1s)
+    let totalSuccesses = (otherSuccesses + tenSuccessValue + wpBonus) - unpairedOnes;
 
     // --- Result Text Logic ---
     let outcomeHTML = '';
 
     // Botch Logic:
-    // A Botch is: 0 Total Successes derived from dice, AND Remaining 1s > 0.
-    // Important: A "Cancelled 10/1 Pair" results in 0 successes and 0 ones, so it prevents a botch (it becomes a simple Failure).
-    // We check: Did we generate ANY positive successes?
+    // Standard rule: A Botch is 0 Successes and 1s present.
+    // With your new rule, if you have a 10 and a 1, you have +1 (or +2) success and 0 penalty.
+    // So the result is positive, and therefore NOT a botch.
+    // A botch only occurs if you have NO successes to begin with, and Unpaired 1s remain.
     const positiveSuccesses = otherSuccesses + tenSuccessValue + wpBonus;
 
-    if (positiveSuccesses === 0 && activeOnes > 0) {
+    if (positiveSuccesses === 0 && unpairedOnes > 0) {
         outcomeHTML = `<span class="blunder-text">BOTCH!</span>`;
     } 
     else if (totalSuccesses > 0) {
