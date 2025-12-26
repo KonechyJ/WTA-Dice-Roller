@@ -79,10 +79,16 @@ function triggerExplosion() {
 }
 
 function checkForExplosions(batch) {
-    let tensCount = batch.filter(val => val === 10).length;
+    // NEW LOGIC: 1s cancel 10s for the purpose of exploding
+    let tens = batch.filter(val => val === 10).length;
+    let ones = batch.filter(val => val === 1).length;
 
-    if (tensCount > 0) {
-        pendingExplosions = tensCount;
+    // Net 10s = (Total 10s) - (Total 1s)
+    // We use Math.max(0, ...) so we don't get negative numbers
+    let netTens = Math.max(0, tens - ones);
+
+    if (netTens > 0) {
+        pendingExplosions = netTens;
         explodeBtn.innerText = `CRITICAL! Reroll (${pendingExplosions})`;
         explodeBtn.classList.remove('hidden');
     } else {
@@ -103,7 +109,7 @@ function rollD10() {
     return Math.floor(Math.random() * 10) + 1;
 }
 
-// --- Rendering Logic (Updated) ---
+// --- Rendering Logic ---
 
 function renderDice() {
     diceContainer.innerHTML = ''; 
@@ -133,9 +139,7 @@ function renderDice() {
             rowDiv.appendChild(die);
         });
 
-        // --- NEW LOCATION ---
-        // If this is the FIRST batch (batchIndex === 0) AND Willpower is spent,
-        // add the Ghost Die right here in the same row.
+        // If this is the FIRST batch AND Willpower is spent, add the Ghost Die here
         if (batchIndex === 0 && isWillpowerSpent) {
             const autoDie = document.createElement('div');
             autoDie.classList.add('die', 'auto-success');
@@ -147,41 +151,64 @@ function renderDice() {
     });
 }
 
-// --- Calculation Logic ---
+// --- Calculation Logic (UPDATED) ---
 
 function calculateResults() {
     const difficulty = parseInt(difficultyInput.value) || 6;
     const isSpecialty = specialtyToggle.checked; 
     
-    // Flatten all batches into one list for calculation
+    // Flatten all batches into one list
     const allDice = diceBatches.flat();
 
-    let rawSuccesses = 0;
+    // 1. Tally up the raw counts
+    let tensCount = 0;
     let onesCount = 0;
-    let tenCount = 0;
+    let otherSuccesses = 0; // Successes that are NOT 10s (e.g. 7, 8, 9)
 
     allDice.forEach(val => {
-        if (val >= difficulty) rawSuccesses++;
-        if (val === 1) onesCount++;
-        if (val === 10) tenCount++;
+        if (val === 10) {
+            tensCount++;
+        } else if (val === 1) {
+            onesCount++;
+        } else if (val >= difficulty) {
+            // These are successes that are neither 10 nor 1
+            otherSuccesses++;
+        }
     });
 
-    let critBonus = 0;
+    // 2. Cancellation Phase: 1s cancel 10s FIRST
+    // Find how many pairs exist
+    const cancelledCount = Math.min(tensCount, onesCount);
 
+    // Calculate what is left after cancellation
+    const activeTens = tensCount - cancelledCount;
+    const activeOnes = onesCount - cancelledCount;
+
+    // 3. Score the Active 10s
+    let tenSuccessValue = 0;
     if (isSpecialty) {
-        // Specialty Rule: Every 10 counts as 2 successes (+1 bonus)
-        critBonus = tenCount; 
+        tenSuccessValue = activeTens * 2; // Specialty: 10s = 2 successes
     } else {
-        critBonus = 0; 
+        tenSuccessValue = activeTens * 1; // Normal: 10s = 1 success
     }
-    
+
+    // 4. Willpower
     const wpBonus = isWillpowerSpent ? 1 : 0;
 
-    let totalSuccesses = (rawSuccesses + critBonus + wpBonus) - onesCount;
+    // 5. Final Sum
+    // (Normal Successes + Active 10s + WP) - (Remaining 1s)
+    let totalSuccesses = (otherSuccesses + tenSuccessValue + wpBonus) - activeOnes;
 
+    // --- Result Text Logic ---
     let outcomeHTML = '';
 
-    if (rawSuccesses === 0 && onesCount > 0 && !isWillpowerSpent) {
+    // Botch Logic:
+    // A Botch is: 0 Total Successes derived from dice, AND Remaining 1s > 0.
+    // Important: A "Cancelled 10/1 Pair" results in 0 successes and 0 ones, so it prevents a botch (it becomes a simple Failure).
+    // We check: Did we generate ANY positive successes?
+    const positiveSuccesses = otherSuccesses + tenSuccessValue + wpBonus;
+
+    if (positiveSuccesses === 0 && activeOnes > 0) {
         outcomeHTML = `<span class="blunder-text">BOTCH!</span>`;
     } 
     else if (totalSuccesses > 0) {
