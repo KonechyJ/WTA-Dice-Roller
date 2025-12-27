@@ -178,6 +178,46 @@ input {
     background-color: #ef6c00;
 }
 
+.die.ten { color: #4caf50; border-color: #4caf50; } /* Green */
+.die.one { color: #ff5252; border-color: #ff5252; } /* Red */
+
+/* NEW: Standard Success (Gold) */
+.die.success { 
+    color: #ffd700; 
+    border-color: #ffd700; 
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); /* Subtle glow */
+}
+
+.die.ten { 
+    color: #4caf50; 
+    border-color: #4caf50; 
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); /* Green Glow */
+} 
+
+/* 1s: Red Text + Red Border + Red Glow */
+.die.one { 
+    color: #ff5252; 
+    border-color: #ff5252; 
+    box-shadow: 0 0 8px rgba(255, 82, 82, 0.6); /* Red Glow */
+} 
+
+/* Standard Success: Gold Text + Gold Border + Gold Glow */
+.die.success { 
+    color: #ffd700; 
+    border-color: #ffd700; 
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6); /* Gold Glow */
+}
+
+/* Auto Success Die: Blue Text + Blue Border + Blue Glow */
+.die.auto-success {
+    border-color: #42a5f5;
+    color: #42a5f5;
+    font-size: 0.8rem;
+    line-height: 1.1;
+    text-align: center;
+    box-shadow: 0 0 8px rgba(66, 165, 245, 0.6); /* Blue Glow */
+}
+
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.02); }

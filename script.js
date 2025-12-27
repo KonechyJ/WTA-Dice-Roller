@@ -108,9 +108,12 @@ function rollD10() {
     return Math.floor(Math.random() * 10) + 1;
 }
 
-// --- Rendering Logic ---
+// --- Rendering Logic (UPDATED) ---
 
 function renderDice() {
+    // We need the difficulty to know which dice to paint Gold
+    const difficulty = parseInt(difficultyInput.value) || 6;
+
     diceContainer.innerHTML = ''; 
 
     diceBatches.forEach((batch, batchIndex) => {
@@ -132,8 +135,16 @@ function renderDice() {
             die.classList.add('die');
             die.innerText = value;
 
-            if (value === 10) die.classList.add('ten');
-            if (value === 1) die.classList.add('one');
+            // COLOR LOGIC
+            if (value === 10) {
+                die.classList.add('ten'); // Green
+            } 
+            else if (value === 1) {
+                die.classList.add('one'); // Red
+            } 
+            else if (value >= difficulty) {
+                die.classList.add('success'); // NEW: Gold
+            }
             
             rowDiv.appendChild(die);
         });
@@ -150,7 +161,7 @@ function renderDice() {
     });
 }
 
-// --- Calculation Logic (FIXED) ---
+// --- Calculation Logic ---
 
 function calculateResults() {
     const difficulty = parseInt(difficultyInput.value) || 6;
@@ -176,14 +187,9 @@ function calculateResults() {
     });
 
     // 2. Determine "Unpaired" 1s
-    // A 1 is "paired" if it matched with a 10 to stop an explosion.
-    // Paired 1s do NOT remove successes (per your instruction).
-    // Unpaired 1s DO remove successes.
     const unpairedOnes = Math.max(0, onesCount - tensCount);
 
     // 3. Score the 10s
-    // Your instruction: 10s count for success based on the ORIGINAL amount.
-    // A 10 that was stopped from exploding still counts as a success here.
     let tenSuccessValue = 0;
     if (isSpecialty) {
         tenSuccessValue = tensCount * 2; // Specialty: All 10s = 2 successes
@@ -201,11 +207,6 @@ function calculateResults() {
     // --- Result Text Logic ---
     let outcomeHTML = '';
 
-    // Botch Logic:
-    // Standard rule: A Botch is 0 Successes and 1s present.
-    // With your new rule, if you have a 10 and a 1, you have +1 (or +2) success and 0 penalty.
-    // So the result is positive, and therefore NOT a botch.
-    // A botch only occurs if you have NO successes to begin with, and Unpaired 1s remain.
     const positiveSuccesses = otherSuccesses + tenSuccessValue + wpBonus;
 
     if (positiveSuccesses === 0 && unpairedOnes > 0) {
