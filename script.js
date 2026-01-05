@@ -1,4 +1,4 @@
-// Variables to store state
+// --- Core Logic Variables ---
 let diceBatches = []; // Array of Arrays: [ [Original], [Explosion 1], [Explosion 2] ]
 let isWillpowerSpent = false; 
 let pendingExplosions = 0; 
@@ -13,8 +13,73 @@ const dicePoolInput = document.getElementById('dicePool');
 const difficultyInput = document.getElementById('difficulty');
 const specialtyToggle = document.getElementById('specialtyToggle');
 
-// --- Event Listeners ---
+// --- PDF Drag & Drop Elements ---
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const pdfViewer = document.getElementById('pdfViewer');
+const pdfObject = document.getElementById('pdfObject');
+const pdfName = document.getElementById('pdfName');
+const removePdfBtn = document.getElementById('removePdfBtn');
 
+// --- Sidebar Logic ---
+const menuBtn = document.getElementById('menuBtn');
+const closeBtn = document.getElementById('closeBtn');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+const splitViewToggle = document.getElementById('splitViewToggle');
+const secondaryPanel = document.getElementById('secondaryPanel');
+const mainContainer = document.getElementById('mainContainer');
+
+// Listen for Toggle Change
+splitViewToggle.addEventListener('change', () => {
+    if (splitViewToggle.checked) {
+        // Turn ON Split View
+        secondaryPanel.classList.add('active');
+        mainContainer.style.maxWidth = "100%"; // Allow it to fill half the space
+        closeSidebar(); // Optional: Close menu so user can see the change
+    } else {
+        // Turn OFF Split View
+        secondaryPanel.classList.remove('active');
+        mainContainer.style.maxWidth = "600px"; // Return to focused width
+    }
+});
+
+function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+}
+
+function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+}
+
+menuBtn.addEventListener('click', openSidebar);
+closeBtn.addEventListener('click', closeSidebar);
+overlay.addEventListener('click', closeSidebar); // Close when clicking outside
+//------------------------------------------------------------------
+
+// --- Navigation Logic ---
+const navButtons = document.querySelectorAll('.nav-item');
+const tabPages = document.querySelectorAll('.tab-page');
+
+navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // 1. Remove active class from all buttons and pages
+        navButtons.forEach(b => b.classList.remove('active'));
+        tabPages.forEach(p => p.classList.remove('active'));
+
+        // 2. Add active class to clicked button
+        btn.classList.add('active');
+
+        // 3. Show the target page
+        const targetId = btn.getAttribute('data-target');
+        document.getElementById(targetId).classList.add('active');
+    });
+});
+//--------------------------------------------------------
+
+// --- Event Listeners ---
 rollBtn.addEventListener('click', () => {
     const pool = parseInt(dicePoolInput.value) || 1;
     startNewRoll(pool);
@@ -34,8 +99,8 @@ specialtyToggle.addEventListener('change', () => {
     }
 });
 
-// --- Core Functions ---
 
+// --- Core Functions ---
 function startNewRoll(pool) {
     diceBatches = []; 
     isWillpowerSpent = false;
@@ -108,8 +173,8 @@ function rollD10() {
     return Math.floor(Math.random() * 10) + 1;
 }
 
-// --- Rendering Logic (UPDATED) ---
 
+// --- Rendering Logic (UPDATED) ---
 function renderDice() {
     // We need the difficulty to know which dice to paint Gold
     const difficulty = parseInt(difficultyInput.value) || 6;
@@ -161,8 +226,8 @@ function renderDice() {
     });
 }
 
-// --- Calculation Logic ---
 
+// --- Calculation Logic ---
 function calculateResults() {
     const difficulty = parseInt(difficultyInput.value) || 6;
     const isSpecialty = specialtyToggle.checked; 
@@ -221,6 +286,70 @@ function calculateResults() {
 
     resultText.innerHTML = outcomeHTML;
 }
+
+// --- PDF Drag & Drop Logic ---
+
+// 1. Click to Upload
+dropZone.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        loadPdf(e.target.files[0]);
+    }
+});
+
+// 2. Drag & Drop Events
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault(); // Necessary to allow dropping
+    dropZone.classList.add('drag-over');
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('drag-over');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+
+    if (e.dataTransfer.files.length > 0) {
+        loadPdf(e.dataTransfer.files[0]);
+    }
+});
+
+// 3. Load the PDF Function
+function loadPdf(file) {
+    if (file.type !== 'application/pdf') {
+        alert("Please upload a valid PDF file.");
+        return;
+    }
+
+    // Create a temporary URL for the file
+    const fileURL = URL.createObjectURL(file);
+
+    // Update the DOM
+    pdfName.textContent = file.name;
+    pdfObject.data = fileURL;
+
+    // Swap Views
+    dropZone.classList.add('hidden');
+    pdfViewer.classList.remove('hidden');
+}
+
+// 4. Remove PDF Function
+removePdfBtn.addEventListener('click', () => {
+    // Clear the object data to free memory
+    pdfObject.data = "";
+    
+    // Swap Views back
+    pdfViewer.classList.add('hidden');
+    dropZone.classList.remove('hidden');
+    
+    // Reset input value so you can re-upload the same file if needed
+    fileInput.value = "";
+});
 
 /* ======================================================
    LEGACY REROLL CODE (Commented Out as requested)

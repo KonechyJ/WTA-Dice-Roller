@@ -15,6 +15,329 @@ body {
     display: flex;
     justify-content: center;
     padding: 20px;
+    position: relative;
+}
+
+/* --- NEW: Main Layout Wrapper --- */
+.main-layout {
+    display: flex;
+    justify-content: center; /* Center the single box by default */
+    width: 100%;
+    max-width: 1200px; /* Max width for split view */
+    margin: 50px auto 0; /* Center horizontally */
+    gap: 20px;
+    padding: 0 20px;
+    transition: all 0.3s ease;
+}
+
+/* Ensure the container is flexible */
+.container {
+    flex: 1; /* Take up available space */
+    width: 100%;
+    max-width: 600px; /* Default width when single */
+    margin: 0; /* Remove old margin centering, let flex handle it */
+    transition: max-width 0.3s ease;
+}
+
+/* --- PDF / Secondary Panel Styling --- */
+
+/* Make the panel a flex container so the PDF fills height */
+.secondary-panel {
+    flex: 1;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    
+    /* NEW: Force Height Logic */
+    height: 85vh; /* Takes up 85% of the viewport height */
+    display: none; /* Hidden by default */
+    flex-direction: column; /* Stack children vertically */
+    overflow: hidden; /* Keeps the PDF inside the rounded corners */
+    padding: 0; /* Remove padding so PDF goes edge-to-edge */
+}
+
+.secondary-panel.active {
+    display: flex; 
+}
+
+.drop-zone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 3px dashed #555;
+    border-radius: 10px;
+    margin: 20px; /* Add visual spacing back here */
+    color: #888;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--accent); /* Red highlight */
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.drop-zone p {
+    margin-top: 15px;
+    line-height: 1.5;
+}
+
+.pdf-viewer {
+    flex: 1; /* Grow to fill the available height */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Force full height */
+    width: 100%;
+}
+
+.pdf-viewer.hidden {
+    display: none;
+}
+
+.pdf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px; /* Add horizontal padding back */
+    background-color: #222;
+    border-bottom: 1px solid #444;
+    min-height: 50px; /* Ensure header has a fixed size */
+}
+
+.pdf-header span {
+    font-size: 0.9rem;
+    color: #aaa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+}
+
+/* The actual PDF Embed */
+object {
+    display: block;
+    width: 100%;
+    height: 100%; /* This is the key fix */
+    flex: 1;      /* Grow to fill the remaining space below header */
+    border: none;
+}
+
+/* --- Sidebar Toggle Switch --- */
+.toggle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 12px;
+    border-radius: 5px;
+}
+
+/* The Switch Box */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #555;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--accent); /* Red when active */
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* --- Hamburger Button (Top Left) --- */
+.menu-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    z-index: 1100; /* Above everything */
+    padding: 5px;
+    transition: color 0.2s;
+}
+
+.menu-btn:hover {
+    color: white;
+}
+
+/* --- Sidebar Styling --- */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    background-color: #252525;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+    z-index: 2000; /* Topmost layer */
+    transform: translateX(-100%); /* Hidden by default */
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.open {
+    transform: translateX(0); /* Slide in */
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    color: var(--accent);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.sidebar-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sidebar-item {
+    background-color: #333;
+    border: none;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sidebar-item:hover {
+    background-color: #444;
+}
+
+/* --- Overlay (Dims background when menu is open) --- */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1500; /* Below sidebar, above content */
+    display: none; /* Hidden by default */
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* --- Navigation Styling --- */
+.app-nav {
+    position: absolute; /* Takes it out of the layout flow */
+    top: 15px;          /* Distance from top */
+    right: 15px;        /* Distance from right */
+    display: flex;
+    gap: 10px;
+    z-index: 1000;      /* Ensures it sits on top of everything */
+}
+
+.nav-item {
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    border: 1px solid #444;
+    color: #888;
+    cursor: pointer;
+    padding: 8px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 20px; /* Pill shape looks better for floating buttons */
+    transition: all 0.2s;
+    -webkit-backdrop-filter: blur(5px); /* Safari support */
+    backdrop-filter: blur(5px); /* Cool blur effect behind the button */
+}
+
+.nav-item:hover {
+    background-color: #333;
+    color: white;
+    border-color: #666;
+}
+
+.nav-item.active {
+    background-color: #444;
+    color: var(--accent); 
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.nav-item svg {
+    stroke: currentColor; 
+}
+
+/* --- Tab Page Logic --- */
+.tab-page {
+    display: none; /* Hidden by default */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.tab-page.active {
+    display: block; /* Show if active */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .container {
@@ -25,6 +348,7 @@ body {
     max-width: 600px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    margin-top: 50px;
 }
 
 .controls {
