@@ -16,13 +16,25 @@
                 <label for="dicePool">Dice Pool</label>
                 <input type="number" id="dicePool" value="1" min="1" max="20">
             </div>
+            
             <div class="input-group">
                 <label for="difficulty">Difficulty</label>
                 <input type="number" id="difficulty" value="6" min="2" max="10">
             </div>
+            
             <div class="input-group">
                 <label for="specialtyToggle" style="font-size: 0.9rem;">Specialty?</label>
-                <input type="checkbox" id="specialtyToggle" style="width: 20px; height: 20px; margin-top: 10px; cursor: pointer;">
+                <input type="checkbox" id="specialtyToggle" class="checkbox-style">
+            </div>
+
+            <div class="input-group split-group">
+                <label for="splitActionToggle" style="font-size: 0.9rem; color: #ff9800;">Split Action?</label>
+                <input type="checkbox" id="splitActionToggle" class="checkbox-style">
+                
+                <div id="splitInputContainer" class="split-input-container hidden">
+                    <label for="splitActionIndex" class="tiny-label">Action #</label>
+                    <input type="number" id="splitActionIndex" value="1" min="1" max="10">
+                </div>
             </div>
         </div>
 
@@ -34,7 +46,6 @@
 
         <div class="action-row">
             <button id="wpSpendBtn" class="secondary-btn hidden">Spend Willpower (+1 Success)</button>
-            
             <button id="explodeBtn" class="explode-btn hidden">CRITICAL! Reroll (0)</button>
         </div>
     </div>

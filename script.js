@@ -1,5 +1,5 @@
 // Variables to store state
-let diceBatches = []; // Array of Arrays: [ [Original], [Explosion 1], [Explosion 2] ]
+let diceBatches = []; 
 let isWillpowerSpent = false; 
 let pendingExplosions = 0; 
 
@@ -13,10 +13,41 @@ const dicePoolInput = document.getElementById('dicePool');
 const difficultyInput = document.getElementById('difficulty');
 const specialtyToggle = document.getElementById('specialtyToggle');
 
+// NEW: Split Action Elements
+const splitActionToggle = document.getElementById('splitActionToggle');
+const splitInputContainer = document.getElementById('splitInputContainer');
+const splitActionIndex = document.getElementById('splitActionIndex');
+
 // --- Event Listeners ---
 
+// Toggle visibility of Split Action controls
+splitActionToggle.addEventListener('change', () => {
+    if (splitActionToggle.checked) {
+        splitInputContainer.classList.remove('hidden');
+    } else {
+        splitInputContainer.classList.add('hidden');
+        splitActionIndex.value = 1; // Reset to 1 when unchecked
+    }
+});
+
 rollBtn.addEventListener('click', () => {
-    const pool = parseInt(dicePoolInput.value) || 1;
+    let pool = parseInt(dicePoolInput.value) || 1;
+    
+    // NEW: Apply Split Action Penalty
+    if (splitActionToggle.checked) {
+        const actionNum = parseInt(splitActionIndex.value) || 1;
+        
+        // Example: Action 1 = -1 die, Action 2 = -2 dice
+        pool = pool - actionNum;
+        
+        // Safety check: Cannot roll 0 or negative dice
+        if (pool <= 0) {
+            resultText.innerHTML = `<span class="blunder-text">Pool reduced to 0! Too many actions.</span>`;
+            diceContainer.innerHTML = ''; // Clear previous dice
+            return; // Stop the roll
+        }
+    }
+
     startNewRoll(pool);
 });
 
@@ -108,7 +139,7 @@ function rollD10() {
     return Math.floor(Math.random() * 10) + 1;
 }
 
-// --- Rendering Logic (UPDATED) ---
+// --- Rendering Logic ---
 
 function renderDice() {
     // We need the difficulty to know which dice to paint Gold
@@ -143,7 +174,7 @@ function renderDice() {
                 die.classList.add('one'); // Red
             } 
             else if (value >= difficulty) {
-                die.classList.add('success'); // NEW: Gold
+                die.classList.add('success'); // Gold
             }
             
             rowDiv.appendChild(die);
