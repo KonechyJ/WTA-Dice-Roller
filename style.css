@@ -6,7 +6,7 @@
     --die-bg: #444;
     --die-selected: #ffd700;
     --explode-color: #ff6d00; 
-    --split-color: #ff9800; /* New Color for Split Actions */
+    --split-color: #ff9800; /* New Orange for Split Actions */
 }
 
 body {
@@ -31,9 +31,9 @@ body {
 .controls {
     display: flex;
     justify-content: center;
-    gap: 15px; /* Slightly tighter gap to fit 4 items */
+    gap: 15px;
     margin-bottom: 20px;
-    flex-wrap: wrap; /* Allows wrapping on small screens */
+    flex-wrap: wrap;
 }
 
 .input-group {
@@ -53,14 +53,7 @@ input[type="number"] {
     margin-top: 5px;
 }
 
-.checkbox-style {
-    width: 20px; 
-    height: 20px; 
-    margin-top: 10px; 
-    cursor: pointer;
-}
-
-/* --- NEW: Split Action Styling --- */
+/* --- Split Action Controls --- */
 .split-group label {
     font-weight: bold;
 }
@@ -74,8 +67,8 @@ input[type="number"] {
 }
 
 .split-input-container input {
-    width: 50px; /* Slightly smaller box */
-    border: 2px solid var(--split-color); /* Orange border to signify penalty */
+    width: 50px; 
+    border: 2px solid var(--split-color);
     background-color: #333;
     color: var(--split-color);
 }
@@ -86,12 +79,68 @@ input[type="number"] {
     margin-bottom: 2px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+/* --- Split Action Slots (The Wizard UI) --- */
+.split-slots-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
 }
 
-/* --- EXISTING STYLES BELOW --- */
+.action-slot {
+    background-color: #333;
+    border: 2px dashed #555;
+    border-radius: 8px;
+    padding: 20px 15px 15px 15px;
+    min-height: 100px;
+    position: relative;
+    transition: all 0.3s;
+    opacity: 0.5; 
+}
+
+.action-slot.active {
+    border-color: var(--split-color);
+    border-style: solid;
+    opacity: 1;
+    background-color: #2a2a2a;
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.2);
+}
+
+.action-slot.completed {
+    border-color: #4caf50;
+    border-style: solid;
+    opacity: 1;
+}
+
+.slot-label {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background-color: var(--split-color);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.slot-info {
+    font-size: 0.9rem;
+    color: #bbb;
+    margin-bottom: 10px;
+    display: block;
+    min-height: 1.2em;
+}
+
+/* Text sizes inside slots */
+.action-slot .success-text, 
+.action-slot .blunder-text, 
+.action-slot .failure-text { 
+    font-size: 1.1rem; 
+}
+
+/* --- Standard Styles --- */
 .primary-btn {
     background-color: var(--accent);
     color: white;
@@ -103,12 +152,8 @@ input[type="number"] {
     transition: background 0.2s;
     width: 100%;
 }
+.primary-btn:hover { background-color: #b71c1c; }
 
-.primary-btn:hover {
-    background-color: #b71c1c;
-}
-
-/* Results */
 .result-text {
     margin: 20px 0;
     font-size: 1.5rem;
@@ -120,7 +165,6 @@ input[type="number"] {
 .failure-text { color: #bdbdbd; }
 .blunder-text { color: #ff5252; }
 
-/* Dice Styling */
 .dice-container-wrapper {
     display: flex;
     flex-direction: column;
@@ -159,31 +203,14 @@ input[type="number"] {
     user-select: none;
     transition: transform 0.1s;
 }
-
 .die:hover { transform: scale(1.1); }
 
-/* Colors/Glows */
-.die.ten { 
-    color: #4caf50; 
-    border-color: #4caf50; 
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); 
-} 
-.die.one { 
-    color: #ff5252; 
-    border-color: #ff5252; 
-    box-shadow: 0 0 8px rgba(255, 82, 82, 0.6); 
-} 
-.die.success { 
-    color: #ffd700; 
-    border-color: #ffd700; 
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6); 
-}
+.die.ten { color: #4caf50; border-color: #4caf50; box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); } 
+.die.one { color: #ff5252; border-color: #ff5252; box-shadow: 0 0 8px rgba(255, 82, 82, 0.6); } 
+.die.success { color: #ffd700; border-color: #ffd700; box-shadow: 0 0 8px rgba(255, 215, 0, 0.6); }
 .die.auto-success {
-    border-color: #42a5f5;
-    color: #42a5f5;
-    font-size: 0.8rem;
-    line-height: 1.1;
-    text-align: center;
+    border-color: #42a5f5; color: #42a5f5;
+    font-size: 0.8rem; line-height: 1.1; text-align: center;
     box-shadow: 0 0 8px rgba(66, 165, 245, 0.6);
 }
 
@@ -206,11 +233,7 @@ input[type="number"] {
     cursor: pointer;
     width: 100%;
 }
-
-.secondary-btn.active {
-    background-color: #1976d2; 
-    border: 2px solid #64b5f6;
-}
+.secondary-btn.active { background-color: #1976d2; border: 2px solid #64b5f6; }
 
 .explode-btn {
     background-color: var(--explode-color);
@@ -230,4 +253,9 @@ input[type="number"] {
     0% { transform: scale(1); }
     50% { transform: scale(1.02); }
     100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
