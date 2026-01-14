@@ -5,7 +5,8 @@
     --accent: #d32f2f; 
     --die-bg: #444;
     --die-selected: #ffd700;
-    --explode-color: #ff6d00; /* New Orange for Criticals */
+    --explode-color: #ff6d00; 
+    --split-color: #ff9800; /* New Color for Split Actions */
 }
 
 body {
@@ -30,17 +31,19 @@ body {
 .controls {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 15px; /* Slightly tighter gap to fit 4 items */
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Allows wrapping on small screens */
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-width: 70px;
 }
 
-input {
+input[type="number"] {
     padding: 10px;
     font-size: 1.2rem;
     width: 60px;
@@ -50,6 +53,45 @@ input {
     margin-top: 5px;
 }
 
+.checkbox-style {
+    width: 20px; 
+    height: 20px; 
+    margin-top: 10px; 
+    cursor: pointer;
+}
+
+/* --- NEW: Split Action Styling --- */
+.split-group label {
+    font-weight: bold;
+}
+
+.split-input-container {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.split-input-container input {
+    width: 50px; /* Slightly smaller box */
+    border: 2px solid var(--split-color); /* Orange border to signify penalty */
+    background-color: #333;
+    color: var(--split-color);
+}
+
+.tiny-label {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-bottom: 2px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- EXISTING STYLES BELOW --- */
 .primary-btn {
     background-color: var(--accent);
     color: white;
@@ -78,8 +120,7 @@ input {
 .failure-text { color: #bdbdbd; }
 .blunder-text { color: #ff5252; }
 
-/* --- DICE STYLING --- */
-/* Wrapper to hold groups of dice */
+/* Dice Styling */
 .dice-container-wrapper {
     display: flex;
     flex-direction: column;
@@ -88,7 +129,6 @@ input {
     margin: 20px 0;
 }
 
-/* Individual Batch Row */
 .dice-batch {
     display: flex;
     flex-wrap: wrap;
@@ -97,7 +137,6 @@ input {
     width: 100%;
 }
 
-/* Separator Line */
 .batch-separator {
     width: 80%;
     height: 1px;
@@ -122,22 +161,35 @@ input {
 }
 
 .die:hover { transform: scale(1.1); }
-.die.ten { color: #4caf50; border-color: #4caf50; } 
-.die.one { color: #ff5252; border-color: #ff5252; } 
 
-/* Auto Success Die */
+/* Colors/Glows */
+.die.ten { 
+    color: #4caf50; 
+    border-color: #4caf50; 
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); 
+} 
+.die.one { 
+    color: #ff5252; 
+    border-color: #ff5252; 
+    box-shadow: 0 0 8px rgba(255, 82, 82, 0.6); 
+} 
+.die.success { 
+    color: #ffd700; 
+    border-color: #ffd700; 
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6); 
+}
 .die.auto-success {
     border-color: #42a5f5;
     color: #42a5f5;
     font-size: 0.8rem;
     line-height: 1.1;
     text-align: center;
+    box-shadow: 0 0 8px rgba(66, 165, 245, 0.6);
 }
 
-/* --- ACTION BUTTONS --- */
 .action-row {
     display: flex;
-    flex-direction: column; /* Stack buttons on mobile */
+    flex-direction: column; 
     gap: 10px;
     margin-top: 20px;
 }
@@ -160,7 +212,6 @@ input {
     border: 2px solid #64b5f6;
 }
 
-/* NEW: Explode Button (Orange) */
 .explode-btn {
     background-color: var(--explode-color);
     color: white;
@@ -171,42 +222,9 @@ input {
     cursor: pointer;
     width: 100%;
     font-weight: bold;
-    animation: pulse 1.5s infinite; /* Subtle pulse animation */
+    animation: pulse 1.5s infinite; 
 }
-
-.explode-btn:hover {
-    background-color: #ef6c00;
-}
-
-.die.ten { 
-    color: #4caf50; 
-    border-color: #4caf50; 
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); /* Green Glow */
-} 
-
-/* 1s: Red Text + Red Border + Red Glow */
-.die.one { 
-    color: #ff5252; 
-    border-color: #ff5252; 
-    box-shadow: 0 0 8px rgba(255, 82, 82, 0.6); /* Red Glow */
-} 
-
-/* Standard Success: Gold Text + Gold Border + Gold Glow */
-.die.success { 
-    color: #ffd700; 
-    border-color: #ffd700; 
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6); /* Gold Glow */
-}
-
-/* Auto Success Die: Blue Text + Blue Border + Blue Glow */
-.die.auto-success {
-    border-color: #42a5f5;
-    color: #42a5f5;
-    font-size: 0.8rem;
-    line-height: 1.1;
-    text-align: center;
-    box-shadow: 0 0 8px rgba(66, 165, 245, 0.6); /* Blue Glow */
-}
+.explode-btn:hover { background-color: #ef6c00; }
 
 @keyframes pulse {
     0% { transform: scale(1); }
