@@ -537,3 +537,70 @@ input {
     50% { transform: scale(1.02); }
     100% { transform: scale(1); }
 }
+
+/* ==========================================
+   V5 SPECIFIC STYLES 
+   ========================================== */
+
+/* Base V5 Die (Overrides some default .die styles) */
+.die.v5 {
+    transition: all 0.2s ease;
+}
+
+/* --- SUCCESSES (Values 6-10) --- */
+.die.v5.normal.success {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #cccccc;
+}
+
+.die.v5.hunger.success {
+    background-color: #ff3333; /* Solid Red */
+    color: #000000;
+    border: 2px solid #cc0000;
+}
+
+/* --- FAILURES (Values 2-5 for Hunger, 1-5 for Normal) --- */
+.die.v5.failure {
+    background-color: transparent;
+    border: 2px solid transparent; /* Keeps the spacing exactly the same */
+    font-size: 3rem; /* Make the dot large */
+    line-height: 1;
+}
+
+.die.v5.normal.failure {
+    color: #ffffff; /* White Dot */
+}
+
+.die.v5.hunger.failure {
+    color: #ff3333; /* Red Dot */
+}
+
+/* --- CRITICALS & BESTIAL FAILURES --- */
+.die.v5.critical {
+    box-shadow: 0 0 15px #ffffff !important; /* White Glow */
+}
+
+.die.v5.hunger.bestial {
+    background-color: #ff3333; 
+    color: #000000;
+    border: 2px solid #800000;
+    box-shadow: 0 0 15px #800000; /* Maroon Glow */
+    font-size: 1.5rem; /* Sized for the Beast placeholder */
+}
+
+/* --- WILLPOWER REROLL SELECTION --- */
+.die.v5.selectable {
+    border: 2px solid #ffffff !important; /* White outline reveals the box */
+    cursor: pointer;
+}
+
+.die.v5.selectable:hover {
+    transform: scale(1.1);
+}
+
+.die.v5.selected {
+    background-color: #800000 !important; /* Fill with Maroon */
+    color: #ffffff !important; /* Make the number/dot white so it's readable */
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* Inner shadow for depth */
+}
