@@ -541,9 +541,10 @@ input {
 /* ==========================================
    V5 SPECIFIC STYLES (Image Based)
    ========================================== */
-
-/* Base V5 Die - Completely transparent by default */
+/* Base V5 Die - Completely transparent by default and larger for images */
 .die.v5 {
+    width: 450px;  /* Increased from the default 50px */
+    height: 450px; /* Increased from the default 50px */
     background-color: transparent !important; 
     border: 2px solid transparent !important; 
     box-shadow: none !important;
@@ -560,6 +561,7 @@ input {
     height: 100%;
     object-fit: contain;
     pointer-events: none; /* Ensures clicks pass through to the parent container */
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); /* Adds a subtle shadow behind the image itself so it pops on the background */
 }
 
 /* --- FAILURES (Dots) --- */
