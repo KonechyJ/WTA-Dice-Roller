@@ -112,6 +112,7 @@ function executeWillpowerReroll() {
 // --- Rendering ---
 
 // --- Rendering ---
+// --- Rendering ---
 function renderV5Dice() {
     v5DiceContainer.innerHTML = '';
     
@@ -120,35 +121,42 @@ function renderV5Dice() {
 
     v5Dice.forEach((die, index) => {
         const dieElement = document.createElement('div');
-        // Add base classes
         dieElement.classList.add('die', 'v5');
         
-        // 1. Determine Type (Normal vs Hunger)
+        // 1. Determine Type
         if (die.isHunger) {
             dieElement.classList.add('hunger');
         } else {
             dieElement.classList.add('normal');
         }
 
-        // 2. Determine Value / Outcome
+        // 2. Determine Value / Inject Images
         if (die.value === 10) {
             dieElement.classList.add('success', 'critical');
-            dieElement.innerText = '10';
+            if (die.isHunger) {
+                dieElement.innerHTML = `<img src="Images/HungerCrit.png" class="dice-img" alt="Hunger Critical">`;
+            } else {
+                dieElement.innerHTML = `<img src="Images/Crit.png" class="dice-img" alt="Normal Critical">`;
+            }
         } 
         else if (die.value >= 6) {
             dieElement.classList.add('success');
-            dieElement.innerText = die.value;
+            if (die.isHunger) {
+                dieElement.innerHTML = `<img src="Images/HungerSuccess.png" class="dice-img" alt="Hunger Success">`;
+            } else {
+                dieElement.innerHTML = `<img src="Images/success.png" class="dice-img" alt="Normal Success">`;
+            }
         } 
         else {
-            // It's a failure (5 or below)
+            // Failure (5 or below)
             if (die.isHunger && die.value === 1) {
                 // Bestial Failure! 
                 dieElement.classList.add('bestial');
-                dieElement.innerHTML = '🐺'; // PLACEHOLDER ICON
+                dieElement.innerHTML = `<img src="Images/beast.png" class="dice-img" alt="Bestial Failure">`;
             } else {
                 // Standard Failure
                 dieElement.classList.add('failure');
-                dieElement.innerHTML = '&bull;'; // HTML entity for a solid bullet/dot
+                dieElement.innerHTML = '&bull;';
             }
         }
 
