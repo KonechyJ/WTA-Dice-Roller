@@ -16,6 +16,8 @@ const v5WpBtn = document.getElementById('v5WpBtn');
 const v5ConfirmWpBtn = document.getElementById('v5ConfirmWpBtn');
 const v5DiceContainer = document.getElementById('v5DiceContainer');
 const v5ResultText = document.getElementById('v5ResultText');
+const v5InstructionText = document.getElementById('v5InstructionText');
+
 
 // --- Event Listeners ---
 v5RollBtn.addEventListener('click', () => {
@@ -38,25 +40,47 @@ function startV5Roll(pool, hunger) {
     isV5WillpowerSpent = false;
     isSelectingRerolls = false;
 
-    // Calculate how many dice are Hunger vs Regular
-    // Hunger dice cannot exceed the total pool size
+    v5InstructionText.innerText = "";
+
     const hungerDiceCount = Math.min(pool, hunger);
     const regularDiceCount = pool - hungerDiceCount;
 
-    // Roll Regular Dice
+    // 1. Generate Regular Dice
     for (let i = 0; i < regularDiceCount; i++) {
         v5Dice.push({ value: rollD10(), isHunger: false, selected: false });
     }
 
-    // Roll Hunger Dice
+    // 2. Generate Hunger Dice
     for (let i = 0; i < hungerDiceCount; i++) {
         v5Dice.push({ value: rollD10(), isHunger: true, selected: false });
     }
 
+    // 3. SORTING LOGIC (Only happens on initial roll)
+    v5Dice.sort((a, b) => {
+        // Rule: Hunger dice always come first (left)
+        if (a.isHunger !== b.isHunger) {
+            return a.isHunger ? -1 : 1;
+        }
+
+        if (a.isHunger) {
+            // Hunger Sort: Success (6-10) > Failure (2-5) > Bestial (1)
+            const getHungerRank = (val) => {
+                if (val >= 6) return 1; // Top priority
+                if (val > 1) return 2;  // Mid priority
+                return 3;               // Bestial last
+            };
+            return getHungerRank(a.value) - getHungerRank(b.value);
+        } else {
+            // Regular Sort: Success (6-10) > Failure (1-5)
+            const getRegularRank = (val) => (val >= 6 ? 1 : 2);
+            return getRegularRank(a.value) - getRegularRank(b.value);
+        }
+    });
+
     // Reset UI Buttons
     v5WpBtn.classList.remove('hidden', 'active');
     v5WpBtn.innerText = "Spend Willpower (Reroll up to 3)";
-    v5WpBtn.disabled = regularDiceCount === 0; // Disable if no regular dice to reroll
+    v5WpBtn.disabled = regularDiceCount === 0;
     v5ConfirmWpBtn.classList.add('hidden');
 
     renderV5Dice();
@@ -64,15 +88,6 @@ function startV5Roll(pool, hunger) {
 }
 
 // --- Willpower Reroll Mechanics ---
-
-function initWillpowerSelection() {
-    isSelectingRerolls = true;
-    v5WpBtn.classList.add('hidden');
-    v5ConfirmWpBtn.classList.remove('hidden');
-    v5ResultText.innerHTML = `<span style="color: #42a5f5;">Select up to 3 Regular Dice to reroll...</span>`;
-    renderV5Dice(); // Re-render to show selectable styling
-}
-
 function toggleDieSelection(index) {
     if (!isSelectingRerolls || v5Dice[index].isHunger) return; // Cannot select hunger dice
 
@@ -91,27 +106,41 @@ function executeWillpowerReroll() {
     isSelectingRerolls = false;
     isV5WillpowerSpent = true;
     
-    // Reroll the selected dice
     v5Dice.forEach(die => {
         if (die.selected) {
             die.value = rollD10();
-            die.selected = false; // clear selection after roll
+            die.selected = false; 
         }
     });
 
-    // Update UI
+    // Clear the instruction text now that the reroll is done
+    v5InstructionText.innerText = "";
+
     v5ConfirmWpBtn.classList.add('hidden');
     v5WpBtn.classList.remove('hidden');
     v5WpBtn.innerText = "Willpower Spent";
     v5WpBtn.disabled = true;
 
     renderV5Dice();
-    calculateV5Results();
+    calculateV5Results(); // This will update the successes at the top
 }
 
-// --- Rendering ---
+// --- Willpower Reroll Initialization ---
+function initWillpowerSelection() {
+    const regularDice = v5Dice.filter(d => !d.isHunger);
+    if (regularDice.length === 0) return;
 
-// --- Rendering ---
+    isSelectingRerolls = true;
+
+    // Show instructions in the NEW white text area
+    v5InstructionText.innerText = "Select up to three non-Hunger dice to reroll, then press Confirm.";
+    v5InstructionText.style.color = "white"; // Enforcing white as requested
+
+    v5WpBtn.classList.add('hidden');
+    v5ConfirmWpBtn.classList.remove('hidden');
+    renderV5Dice();
+}
+
 // --- Rendering ---
 function renderV5Dice() {
     v5DiceContainer.innerHTML = '';
@@ -175,66 +204,57 @@ function renderV5Dice() {
 
     v5DiceContainer.appendChild(rowDiv);
 }
-// --- Calculation Logic ---
 
+// --- Calculation Logic ---
 function calculateV5Results() {
-    const difficulty = parseInt(v5DiffInput.value) || 1; // Default to needing 1 success
+    // 1. Get Difficulty (Fallback to 1 if the input is hidden or missing)
+    const diffElement = document.getElementById('v5Diff');
+    const difficulty = (diffElement ? parseInt(diffElement.value) : 1) || 1;
     
     let standardSuccesses = 0;
     let regularTens = 0;
     let hungerTens = 0;
     let hungerOnes = 0;
 
-    // Tally the dice
+    // 2. Count the dice
     v5Dice.forEach(die => {
-        if (die.value >= 6 && die.value <= 9) {
-            standardSuccesses++;
-        } else if (die.value === 10) {
+        if (die.value >= 6 && die.value <= 9) standardSuccesses++;
+        else if (die.value === 10) {
             if (die.isHunger) hungerTens++;
             else regularTens++;
-        } else if (die.value === 1 && die.isHunger) {
-            hungerOnes++;
-        }
+        } else if (die.value === 1 && die.isHunger) hungerOnes++;
     });
 
-    // Calculate Criticals (Pairs of 10s)
+    // 3. V5 Crit Logic (Pairs of 10s = 4 successes)
     const totalTens = regularTens + hungerTens;
     const criticalPairs = Math.floor(totalTens / 2);
-    
-    // Each pair of 10s is worth 4 successes total (+2 standard, +2 bonus)
-    const criticalSuccesses = criticalPairs * 4; 
-    
-    // Unpaired 10s are just worth 1 success
-    const unpairedTens = totalTens % 2; 
+    const criticalSuccesses = criticalPairs * 4;
+    const singleTens = totalTens % 2;
+    const totalSuccesses = standardSuccesses + criticalSuccesses + singleTens;
 
-    const totalSuccesses = standardSuccesses + criticalSuccesses + unpairedTens;
-
-    // Determine Status Effects
+    // 4. Determine Outcome States
     const isSuccess = totalSuccesses >= difficulty;
     const hasMessyCrit = criticalPairs > 0 && hungerTens > 0;
     const hasHungerOne = hungerOnes > 0;
 
-    // Format the Output Text
-    let outcomeHTML = `<div><strong>${totalSuccesses} Success${totalSuccesses !== 1 ? 'es' : ''}</strong> (vs Diff ${difficulty})</div>`;
+    // 5. Build Result Message (Ensuring white text)
+    // We display total successes regardless of "Success/Failure" status
+    let outcomeHTML = `<div style="color: white; font-size: 1.4rem;"><strong>${totalSuccesses} Total Successes</strong></div>`;
     
+    let statusMessage = "";
     if (isSuccess) {
-        if (hasMessyCrit) {
-            outcomeHTML += `<div class="blunder-text" style="color: #ff5252; font-size: 1.2rem;">MESSY CRITICAL!</div>`;
-        } else if (criticalPairs > 0) {
-            outcomeHTML += `<div class="success-text" style="font-size: 1.2rem;">Critical Success!</div>`;
-        } else if (hasHungerOne) {
-            // Your special request: Success but with a Hunger 1
-            outcomeHTML += `<div style="color: #ffa500; font-size: 1.2rem;">Success <em>(Hunger 1 Rolled - Messy Situation!)</em></div>`;
-        } else {
-            outcomeHTML += `<div class="success-text" style="font-size: 1.2rem;">Success!</div>`;
-        }
+        if (hasMessyCrit) statusMessage = "MESSY CRITICAL!";
+        else if (criticalPairs > 0) statusMessage = "Critical Success!";
+        else if (hasHungerOne) statusMessage = "Success (Hunger 1 Rolled!)";
+        else statusMessage = "Success!";
     } else {
-        if (hasHungerOne) {
-            outcomeHTML += `<div class="blunder-text" style="color: #b71c1c; font-size: 1.2rem;">BESTIAL FAILURE!</div>`;
-        } else {
-            outcomeHTML += `<div class="failure-text" style="font-size: 1.2rem;">Failure</div>`;
-        }
+        // If they have less than 1 success, check for Bestial Failure
+        if (hasHungerOne) statusMessage = "BESTIAL FAILURE!";
+        else statusMessage = "Failure";
     }
 
+    outcomeHTML += `<div style="color: white; font-size: 1.1rem; margin-top: 5px; opacity: 0.9;">${statusMessage}</div>`;
+
+    // Final Render to the result div
     v5ResultText.innerHTML = outcomeHTML;
 }

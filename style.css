@@ -543,8 +543,8 @@ input {
    ========================================== */
 /* Base V5 Die - Completely transparent by default and larger for images */
 .die.v5 {
-    width: 450px;  /* Increased from the default 50px */
-    height: 450px; /* Increased from the default 50px */
+    width: 100px;  /* Increased from the default 50px */
+    height: 100px; /* Increased from the default 50px */
     background-color: transparent !important; 
     border: 2px solid transparent !important; 
     box-shadow: none !important;
