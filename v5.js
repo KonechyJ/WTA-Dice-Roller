@@ -207,54 +207,53 @@ function renderV5Dice() {
 
 // --- Calculation Logic ---
 function calculateV5Results() {
-    // 1. Get Difficulty (Fallback to 1 if the input is hidden or missing)
-    const diffElement = document.getElementById('v5Diff');
-    const difficulty = (diffElement ? parseInt(diffElement.value) : 1) || 1;
-    
     let standardSuccesses = 0;
     let regularTens = 0;
     let hungerTens = 0;
     let hungerOnes = 0;
 
-    // 2. Count the dice
+    // 1. Count the dice
     v5Dice.forEach(die => {
         if (die.value >= 6 && die.value <= 9) standardSuccesses++;
         else if (die.value === 10) {
             if (die.isHunger) hungerTens++;
             else regularTens++;
-        } else if (die.value === 1 && die.isHunger) hungerOnes++;
+        } else if (die.value === 1 && die.isHunger) {
+            hungerOnes++; // This tracks our Bestial Failure condition
+        }
     });
 
-    // 3. V5 Crit Logic (Pairs of 10s = 4 successes)
+    // 2. V5 Success Logic (Pairs of 10s = 4 successes)
     const totalTens = regularTens + hungerTens;
     const criticalPairs = Math.floor(totalTens / 2);
     const criticalSuccesses = criticalPairs * 4;
     const singleTens = totalTens % 2;
     const totalSuccesses = standardSuccesses + criticalSuccesses + singleTens;
 
-    // 4. Determine Outcome States
-    const isSuccess = totalSuccesses >= difficulty;
-    const hasMessyCrit = criticalPairs > 0 && hungerTens > 0;
-    const hasHungerOne = hungerOnes > 0;
+    // --- The "Full Transparency" Report ---
+    let finalReport = [];
 
-    // 5. Build Result Message (Ensuring white text)
-    // We display total successes regardless of "Success/Failure" status
-    let outcomeHTML = `<div style="color: white; font-size: 1.4rem;"><strong>${totalSuccesses} Total Successes</strong></div>`;
-    
-    let statusMessage = "";
-    if (isSuccess) {
-        if (hasMessyCrit) statusMessage = "MESSY CRITICAL!";
-        else if (criticalPairs > 0) statusMessage = "Critical Success!";
-        else if (hasHungerOne) statusMessage = "Success (Hunger 1 Rolled!)";
-        else statusMessage = "Success!";
-    } else {
-        // If they have less than 1 success, check for Bestial Failure
-        if (hasHungerOne) statusMessage = "BESTIAL FAILURE!";
-        else statusMessage = "Failure";
+    // Always show the success count
+    finalReport.push(`<strong>${totalSuccesses} Total Successes</strong>`);
+
+    // 3. Regular Critical Check
+    if (criticalPairs > 0) {
+        finalReport.push(`Critical Success! (${criticalPairs} pair${criticalPairs > 1 ? 's' : ''} of 10s)`);
     }
 
-    outcomeHTML += `<div style="color: white; font-size: 1.1rem; margin-top: 5px; opacity: 0.9;">${statusMessage}</div>`;
+    // 4. Messy Critical Check
+    if (criticalPairs > 0 && hungerTens > 0) {
+        finalReport.push(`<span style="color: #ff5252; font-weight: bold;">MESSY CRITICAL</span>`);
+    }
 
-    // Final Render to the result div
-    v5ResultText.innerHTML = outcomeHTML;
+    // 5. New Bestial Failure Check 
+    // We only care if a Hunger 1 was rolled, regardless of the success count
+    if (hungerOnes > 0) {
+        finalReport.push(`<span style="color: #ff5252; font-weight: bold;">BESTIAL FAILURE</span>`);
+    }
+
+    // Output all messages to the UI in white
+    v5ResultText.innerHTML = `<div style="color: white; font-size: 1.1rem; line-height: 1.5;">
+        ${finalReport.join("<br>")}
+    </div>`;
 }

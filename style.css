@@ -560,22 +560,33 @@ input {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    pointer-events: none; /* Ensures clicks pass through to the parent container */
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); /* Adds a subtle shadow behind the image itself so it pops on the background */
+    pointer-events: none;
+    /* We removed the global filter here */
+}
+
+/* 2. Target ONLY Normal Dice to flip black icons to white */
+.die.v5.normal .dice-img {
+    filter: invert(1); 
+}
+
+/* 3. Hunger Dice - No filter applied */
+.die.v5.hunger .dice-img {
+    filter: none; 
+}
+
+/* 4. Update the Failure Dots as requested */
+.die.v5.normal.failure {
+    color: #000000; /* Black dot for regular dice failures */
+}
+
+.die.v5.hunger.failure {
+    color: #ff3333; /* Red dot for hunger dice failures */
 }
 
 /* --- FAILURES (Dots) --- */
 .die.v5.failure {
     font-size: 3.5rem; /* Make the dot large */
     line-height: 1;
-}
-
-.die.v5.normal.failure {
-    color: #ffffff; /* White Dot */
-}
-
-.die.v5.hunger.failure {
-    color: #ff3333; /* Red Dot */
 }
 
 /* --- WILLPOWER REROLL SELECTION --- */
