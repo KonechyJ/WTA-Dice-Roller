@@ -243,13 +243,13 @@ function calculateV5Results() {
 
     // 4. Messy Critical Check
     if (criticalPairs > 0 && hungerTens > 0) {
-        finalReport.push(`<span style="color: #ff5252; font-weight: bold;">MESSY CRITICAL</span>`);
+        finalReport.push(`<span style="color: #ff5252; font-weight: bold;">POSSIBLE MESSY CRITICAL</span>`);
     }
 
     // 5. New Bestial Failure Check 
     // We only care if a Hunger 1 was rolled, regardless of the success count
     if (hungerOnes > 0) {
-        finalReport.push(`<span style="color: #ff5252; font-weight: bold;">BESTIAL FAILURE</span>`);
+        finalReport.push(`<span style="color: #ff5252; font-weight: bold;">POSSIBLE BESTIAL FAILURE</span>`);
     }
 
     // Output all messages to the UI in white
