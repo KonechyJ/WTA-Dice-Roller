@@ -18,25 +18,61 @@ body {
     position: relative;
 }
 
-/* --- NEW: Main Layout Wrapper --- */
 .main-layout {
     display: flex;
-    justify-content: center; /* Center the single box by default */
+    justify-content: center;
+    align-items: stretch; /* Forces both boxes to the same height */
     width: 100%;
-    max-width: 1200px; /* Max width for split view */
-    margin: 50px auto 0; /* Center horizontally */
+    max-width: 1400px;    /* Restores the more compact width ratio */
+    margin: 80px auto 0;  /* Standard top margin for both */
     gap: 20px;
     padding: 0 20px;
-    transition: all 0.3s ease;
+    height: 85vh;         /* Sets the height for the entire layout */
 }
 
-/* Ensure the container is flexible */
+/* --- Dice Roller Container --- */
 .container {
-    flex: 1; /* Take up available space */
+    flex: 1;
     width: 100%;
-    max-width: 600px; /* Default width when single */
-    margin: 0; /* Remove old margin centering, let flex handle it */
-    transition: max-width 0.3s ease;
+    max-width: 500px;     /* Keeps the roller at its standard size */
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    margin-top: 0 !important; /* Removes the offset */
+    
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;     /* Scroll within the box */
+}
+
+/* --- PDF / Secondary Panel Styling --- */
+.secondary-panel {
+    display: none; 
+    flex-direction: column;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+
+.secondary-panel.active {
+    flex: 2;             /* Balanced ratio: PDF is roughly 2x the roller width */
+    display: flex;
+}
+
+/* Ensure the internal PDF viewer fills the container height */
+.pdf-viewer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#pdfObject {
+    width: 100%;
+    flex-grow: 1;
+    border: none;
 }
 
 /* --- PDF / Secondary Panel Styling --- */
@@ -47,17 +83,17 @@ body {
     background-color: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    
-    /* NEW: Force Height Logic */
-    height: 85vh; /* Takes up 85% of the viewport height */
-    display: none; /* Hidden by default */
-    flex-direction: column; /* Stack children vertically */
-    overflow: hidden; /* Keeps the PDF inside the rounded corners */
-    padding: 0; /* Remove padding so PDF goes edge-to-edge */
+    height: 85vh; /* Larger Vertical Size */
+    display: none; 
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
 }
 
 .secondary-panel.active {
-    display: flex; 
+    flex: 3; /* Panel takes 3x the relative width of the roller */
+    min-width: 700px; 
+    display: flex;
 }
 
 .drop-zone {
@@ -86,11 +122,9 @@ body {
 }
 
 .pdf-viewer {
-    flex: 1; /* Grow to fill the available height */
+    height: 100%;
     display: flex;
     flex-direction: column;
-    height: 100%; /* Force full height */
-    width: 100%;
 }
 
 .pdf-viewer.hidden {
@@ -101,10 +135,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px; /* Add horizontal padding back */
+    padding: 10px 15px;
     background-color: #222;
     border-bottom: 1px solid #444;
-    min-height: 50px; /* Ensure header has a fixed size */
+    min-height: 50px;
 }
 
 .pdf-header span {
@@ -117,12 +151,11 @@ body {
 }
 
 /* The actual PDF Embed */
-object {
-    display: block;
+#pdfObject {
     width: 100%;
-    height: 100%; /* This is the key fix */
-    flex: 1;      /* Grow to fill the remaining space below header */
+    flex-grow: 1; /* Force PDF to fill the 85vh height */
     border: none;
+    border-radius: 0 0 12px 12px;
 }
 
 /* --- Sidebar Toggle Switch --- */
