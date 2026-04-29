@@ -3,53 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Werewolf The Apocalypse W20 - Dice Roller</title>
+    <title>World of Darkness Roller</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
-        <h1>Werewolf The Apocalypse W20 - Dice Roller</h1>
+    <button id="menuBtn" class="menu-btn">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
 
-        <div class="controls">
-            <div class="input-group">
-                <label for="dicePool">Dice Pool</label>
-                <input type="number" id="dicePool" value="1" min="1" max="20">
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+            <button id="closeBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-item toggle-item">
+                <span>Split View</span>
+                <label class="switch">
+                    <input type="checkbox" id="splitViewToggle">
+                    <span class="slider round"></span>
+                </label>
             </div>
             
-            <div class="input-group">
-                <label for="difficulty">Difficulty</label>
-                <input type="number" id="difficulty" value="6" min="2" max="10">
-            </div>
-            
-            <div class="input-group">
-                <label for="specialtyToggle" style="font-size: 0.9rem;">Specialty?</label>
-                <input type="checkbox" id="specialtyToggle" style="width: 20px; height: 20px; margin-top: 10px; cursor: pointer;">
+            <button class="sidebar-item">Character Presets</button>
+            <button class="sidebar-item">Dice Log</button>
+            <button class="sidebar-item">App Settings</button>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
+    <nav class="app-nav">
+        <button class="nav-item active" data-target="page-w20">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <span>W20</span>
+        </button>
+        <button class="nav-item" data-target="page-v5">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2.69l5.74 5.74c3.12 3.12 3.12 8.19 0 11.31C16.18 21.31 14.09 22.08 12 21.31c-2.09.77-4.18 0-5.74-1.56-3.12-3.12-3.12-8.19 0-11.31L12 2.69z"></path>
+            </svg>
+            <span>V5</span>
+        </button>
+    </nav>
+
+    <div class="main-layout">
+        
+        <div class="container" id="mainContainer">
+            <div id="page-w20" class="tab-page active">
+                <h1>Werewolf The Apocalypse W20 - Dice Roller</h1>
+                <div class="controls">
+                    <div class="input-group">
+                        <label for="dicePool">Dice Pool</label>
+                        <input type="number" id="dicePool" value="1" min="1" max="20">
+                    </div>
+                    <div class="input-group">
+                        <label for="difficulty">Difficulty</label>
+                        <input type="number" id="difficulty" value="6" min="2" max="10">
+                    </div>
+                    <div class="input-group">
+                        <label for="specialtyToggle" style="font-size: 0.9rem;">Specialty?</label>
+                        <input type="checkbox" id="specialtyToggle" style="width: 20px; height: 20px; margin-top: 10px; cursor: pointer;">
+                    </div>
+
+                    <div class="input-group split-group">
+                        <label for="splitActionToggle" style="font-size: 0.9rem; color: #ff9800;">Split Action?</label>
+                        <input type="checkbox" id="splitActionToggle" style="width: 20px; height: 20px; margin-top: 10px; cursor: pointer;">
+                        
+                        <div id="splitInputContainer" class="split-input-container hidden">
+                            <label for="splitActionIndex" class="tiny-label"># Actions</label>
+                            <input type="number" id="splitActionIndex" value="2" min="2" max="10">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="rollBtn" class="primary-btn">ROLL</button>
+                <div id="resultText" class="result-text"></div>
+                <div id="diceContainer" class="dice-container-wrapper"></div>
+
+                <div class="action-row">
+                    <button id="wpSpendBtn" class="secondary-btn hidden">Spend Willpower (+1 Success)</button>
+                    <button id="explodeBtn" class="explode-btn hidden">CRITICAL! Reroll (0)</button>
+                </div>
             </div>
 
-            <div class="input-group split-group">
-                <label for="splitActionToggle" style="font-size: 0.9rem; color: #ff9800;">Split Action?</label>
-                <input type="checkbox" id="splitActionToggle" style="width: 20px; height: 20px; margin-top: 10px; cursor: pointer;">
-                
-                <div id="splitInputContainer" class="split-input-container hidden">
-                    <label for="splitActionIndex" class="tiny-label"># Actions</label>
-                    <input type="number" id="splitActionIndex" value="2" min="2" max="10">
+            <div id="page-v5" class="tab-page">
+                <h1>Vampire the Masquerade V5 - Dice Roller</h1>
+                <div class="controls">
+                    <div class="input-group">
+                        <label for="v5Pool">Total Pool</label>
+                        <input type="number" id="v5Pool" value="5" min="1" max="20">
+                    </div>
+                    <div class="input-group">
+                        <label for="v5Hunger">Hunger</label>
+                        <input type="number" id="v5Hunger" value="1" min="0" max="5">
+                    </div>
+
+                    <div class="input-group" style="display: none;">
+                        <label for="v5Diff">Difficulty</label>
+                        <input type="number" id="v5Diff" value="1" min="1" max="10">
+                    </div>
+                </div>
+
+                <button id="v5RollBtn" class="primary-btn">ROLL V5</button>
+                <div id="v5ResultText" class="result-text"></div>
+                <div id="v5InstructionText" style="color: white; min-height: 1.5em; font-weight: bold; margin-bottom: 15px;"></div>
+
+                <div id="v5DiceContainer" class="dice-container-wrapper"></div>
+
+                <div class="action-row">
+                    <button id="v5WpBtn" class="secondary-btn hidden">Spend Willpower (Reroll up to 3)</button>
+                    <button id="v5ConfirmWpBtn" class="explode-btn hidden">Confirm Reroll</button>
                 </div>
             </div>
         </div>
 
-        <button id="rollBtn" class="primary-btn">ROLL</button>
+        <div id="secondaryPanel" class="secondary-panel hidden">
+            
+            <div id="dropZone" class="drop-zone">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="12" y2="12"></line>
+                    <line x1="15" y1="15" x2="12" y2="12"></line>
+                </svg>
+                <p>Drag & Drop Character Sheet (PDF)<br>or <strong>Click to Upload</strong></p>
+                <input type="file" id="fileInput" accept="application/pdf" style="display: none;">
+            </div>
 
-        <div id="resultText" class="result-text"></div>
-        
-        <div id="diceContainer" class="dice-container-wrapper"></div>
+            <div id="pdfViewer" class="pdf-viewer hidden">
+                <div class="pdf-header">
+                    <span id="pdfName">Sheet.pdf</span>
+                    <button id="removePdfBtn" class="close-btn" style="font-size: 1rem;">&times; Remove</button>
+                </div>
+                <object id="pdfObject" type="application/pdf" width="100%" height="100%">
+                    <p>Your browser does not support PDFs. <a href="#">Download the PDF</a>.</p>
+                </object>
+            </div>
 
-        <div class="action-row">
-            <button id="wpSpendBtn" class="secondary-btn hidden">Spend Willpower (+1 Success)</button>
-            <button id="explodeBtn" class="explode-btn hidden">CRITICAL! Reroll (0)</button>
         </div>
+
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="main.js"></script>
+    <script type="module" src="w20.js"></script>
+    <script type="module" src="v5.js"></script>
 </body>
 </html>

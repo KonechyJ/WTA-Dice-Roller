@@ -1,4 +1,8 @@
-// --- State Variables ---
+// ==========================================
+// w20.js - Werewolf: The Apocalypse Logic
+// ==========================================
+
+// Core Logic Variables
 let diceBatches = []; 
 let isWillpowerSpent = false; 
 let pendingExplosions = 0; 
@@ -204,9 +208,7 @@ function startNewRoll(pool, isSplitContext = false) {
     pendingExplosions = 0;
 
     const firstBatch = [];
-    for (let i = 0; i < pool; i++) {
-        firstBatch.push(rollD10());
-    }
+    for (let i = 0; i < pool; i++) firstBatch.push(rollD10());
     diceBatches.push(firstBatch);
 
     wpSpendBtn.classList.remove('hidden');
@@ -417,50 +419,3 @@ function spendWillpower() {
 function rollD10() {
     return Math.floor(Math.random() * 10) + 1;
 }
-
-/* ======================================================
-   LEGACY REROLL CODE (Commented Out as requested)
-   ======================================================
-
-let selectedIndices = new Set(); 
-let canSelect = false; 
-let hasRerolled = false;
-const rerollBtn = document.getElementById('rerollBtn');
-const rerollSection = document.getElementById('rerollSection');
-
-// Event Listener
-// rerollBtn.addEventListener('click', () => { handleRerollButtonClick(); });
-
-function handleRerollButtonClick() {
-    if (!canSelect && !hasRerolled) {
-        canSelect = true; 
-        rerollBtn.innerText = "Confirm Reroll (Select Dice First)";
-        rerollBtn.disabled = true; 
-        renderDice(); 
-    } 
-    else if (canSelect && selectedIndices.size > 0) {
-        executeReroll();
-    }
-}
-
-function toggleSelection(index) {
-    if (selectedIndices.has(index)) {
-        selectedIndices.delete(index);
-    } else {
-        selectedIndices.add(index);
-    }
-    // Update button...
-    renderDice(); 
-}
-
-function executeReroll() {
-    selectedIndices.forEach(index => {
-        currentDice[index] = rollD10();
-    });
-    selectedIndices.clear();
-    canSelect = false;
-    hasRerolled = true; 
-    renderDice();
-    calculateResults();
-}
-====================================================== */
