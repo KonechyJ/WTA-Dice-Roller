@@ -17,6 +17,7 @@ const v5ConfirmWpBtn = document.getElementById('v5ConfirmWpBtn');
 const v5DiceContainer = document.getElementById('v5DiceContainer');
 const v5ResultText = document.getElementById('v5ResultText');
 const v5InstructionText = document.getElementById('v5InstructionText');
+const glitchToggle = document.getElementById('glitchToggle');
 
 
 // --- Event Listeners ---
@@ -131,10 +132,8 @@ function initWillpowerSelection() {
     if (regularDice.length === 0) return;
 
     isSelectingRerolls = true;
-
-    // Show instructions in the NEW white text area
     v5InstructionText.innerText = "Select up to three non-Hunger dice to reroll, then press Confirm.";
-    v5InstructionText.style.color = "white"; // Enforcing white as requested
+    // REMOVE THIS LINE: v5InstructionText.style.color = "white";[cite: 4]
 
     v5WpBtn.classList.add('hidden');
     v5ConfirmWpBtn.classList.remove('hidden');
@@ -142,54 +141,67 @@ function initWillpowerSelection() {
 }
 
 // --- Rendering ---
+/**
+ * Renders the V5 dice to the screen using either standard or "Glitch" icons.
+ * This function also handles the styling for Willpower reroll selection.
+ */
 function renderV5Dice() {
     v5DiceContainer.innerHTML = '';
-    
     const rowDiv = document.createElement('div');
     rowDiv.classList.add('dice-batch');
+
+    // 1. Set the active folder
+    const isGlitch = glitchToggle.checked;
+    const folder = isGlitch ? 'Images_Glitch' : 'Images';
 
     v5Dice.forEach((die, index) => {
         const dieElement = document.createElement('div');
         dieElement.classList.add('die', 'v5');
         
-        // 1. Determine Type
-        if (die.isHunger) {
-            dieElement.classList.add('hunger');
-        } else {
-            dieElement.classList.add('normal');
-        }
+        if (die.isHunger) dieElement.classList.add('hunger');
+        else dieElement.classList.add('normal');
 
-        // 2. Determine Value / Inject Images
+        // 2. Map filenames based on the active folder
+        // Your Glitch folder uses "Crit_Success.png" / "Bestial.png"
+        // Your original Images folder uses "Crit.png" / "beast.png" / "success.png"
+        let imgName = "";
+
         if (die.value === 10) {
             dieElement.classList.add('success', 'critical');
             if (die.isHunger) {
-                dieElement.innerHTML = `<img src="Images/HungerCrit.png" class="dice-img" alt="Hunger Critical">`;
+                imgName = isGlitch ? 'Crit_Success_Hunger.png' : 'HungerCrit.png';
             } else {
-                dieElement.innerHTML = `<img src="Images/Crit.png" class="dice-img" alt="Normal Critical">`;
+                imgName = isGlitch ? 'Crit_Success.png' : 'Crit.png';
             }
         } 
         else if (die.value >= 6) {
             dieElement.classList.add('success');
             if (die.isHunger) {
-                dieElement.innerHTML = `<img src="Images/HungerSuccess.png" class="dice-img" alt="Hunger Success">`;
+                imgName = isGlitch ? 'Success_Hunger.png' : 'HungerSuccess.png';
             } else {
-                dieElement.innerHTML = `<img src="Images/success.png" class="dice-img" alt="Normal Success">`;
+                imgName = isGlitch ? 'Success.png' : 'success.png';
             }
         } 
-        else {
-            // Failure (5 or below)
-            if (die.isHunger && die.value === 1) {
-                // Bestial Failure! 
-                dieElement.classList.add('bestial');
-                dieElement.innerHTML = `<img src="Images/beast.png" class="dice-img" alt="Bestial Failure">`;
+        else if (die.isHunger && die.value === 1) {
+            dieElement.classList.add('bestial');
+            imgName = isGlitch ? 'Bestial.png' : 'beast.png';
+        }
+
+        // 3. Render the Image or the Failure Dot
+        if (imgName) {
+            dieElement.innerHTML = `<img src="${folder}/${imgName}" class="dice-img" alt="Dice Face">`;
+        } else {
+            // Failure logic (values 2-5 or non-hunger 1)
+            if (isGlitch) {
+                const failImg = die.isHunger ? 'Fail_hunger.png' : 'Fail.png';
+                dieElement.innerHTML = `<img src="${folder}/${failImg}" class="dice-img" alt="Failure">`;
             } else {
-                // Standard Failure
                 dieElement.classList.add('failure');
                 dieElement.innerHTML = '&bull;';
             }
         }
 
-        // 3. Selection Styling Logic (Willpower Rerolls)
+        // 4. Selection logic for Willpower Rerolls
         if (isSelectingRerolls && !die.isHunger) {
             dieElement.classList.add('selectable');
             dieElement.addEventListener('click', () => toggleDieSelection(index));
@@ -252,8 +264,8 @@ function calculateV5Results() {
         finalReport.push(`<span style="color: #ff5252; font-weight: bold;">POSSIBLE BESTIAL FAILURE</span>`);
     }
 
-    // Output all messages to the UI in white
-    v5ResultText.innerHTML = `<div style="color: white; font-size: 1.1rem; line-height: 1.5;">
+    // Remove the inline style="color: white"
+    v5ResultText.innerHTML = `<div style="font-size: 1.1rem; line-height: 1.5;">
         ${finalReport.join("<br>")}
     </div>`;
 }
