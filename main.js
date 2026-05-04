@@ -10,6 +10,7 @@ const overlay = document.getElementById('overlay');
 const splitViewToggle = document.getElementById('splitViewToggle');
 const secondaryPanel = document.getElementById('secondaryPanel');
 const mainContainer = document.getElementById('mainContainer');
+const themeToggle = document.getElementById('themeToggle');
 
 splitViewToggle.addEventListener('change', () => {
     if (splitViewToggle.checked) {
@@ -19,6 +20,14 @@ splitViewToggle.addEventListener('change', () => {
     } else {
         secondaryPanel.classList.remove('active');
         mainContainer.style.maxWidth = "600px";
+    }
+});
+
+themeToggle.addEventListener('change', () => {
+    if (themeToggle.checked) {
+        document.body.classList.add('light-mode');
+    } else {
+        document.body.classList.remove('light-mode');
     }
 });
 

@@ -15,7 +15,6 @@
             <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
     </button>
-
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <h3>Menu</h3>
@@ -29,7 +28,21 @@
                     <span class="slider round"></span>
                 </label>
             </div>
-            
+                <div class="sidebar-item toggle-item">
+                <span>Light Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="sidebar-item toggle-item">
+                <label for="glitchToggle" style="font-size: 0.9rem;">Glitch Icons?</label>
+                <label class="switch">
+                    <input type="checkbox" id="glitchToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+                    
             <button class="sidebar-item">Character Presets</button>
             <button class="sidebar-item">Dice Log</button>
             <button class="sidebar-item">App Settings</button>
@@ -113,7 +126,7 @@
 
                 <button id="v5RollBtn" class="primary-btn">ROLL V5</button>
                 <div id="v5ResultText" class="result-text"></div>
-                <div id="v5InstructionText" style="color: white; min-height: 1.5em; font-weight: bold; margin-bottom: 15px;"></div>
+                <div id="v5InstructionText" style="min-height: 1.5em; font-weight: bold; margin-bottom: 15px;"></div>
 
                 <div id="v5DiceContainer" class="dice-container-wrapper"></div>
 

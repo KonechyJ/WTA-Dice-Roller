@@ -686,3 +686,41 @@ input[type="number"] {
 .die.v5.selected.failure {
     color: #ffffff; 
 }
+
+/* Light Mode Overrides */
+body.light-mode {
+    --bg-color: #e0e0e0;
+    --card-bg: #ffffff;
+    --text-color: #1a1a1a;
+    --die-bg: #cccccc;
+}
+
+/* Ensure images remain visible in light mode */
+body.light-mode .die.v5.normal .dice-img {
+    filter: none; /* Images are likely designed for dark, so we remove the invert */
+}
+
+:root {
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-color: #ffffff;
+    --accent: #d32f2f; 
+    --die-bg: #444;
+    --message-color: #ffffff; /* Default white for dark mode */
+}
+
+body.light-mode {
+    --bg-color: #e0e0e0;
+    --card-bg: #ffffff;
+    --text-color: #1a1a1a;
+    --die-bg: #cccccc;
+    --message-color: #1a1a1a; /* Switch to dark grey/black for light mode[cite: 3] */
+}
+
+/* Apply the variable to the message containers[cite: 3] */
+.result-text, 
+#v5InstructionText,
+#v5ResultText {
+    color: var(--message-color) !important;
+    transition: color 0.3s ease;
+}
