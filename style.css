@@ -578,7 +578,7 @@ input[type="number"] {
     margin-top: 20px;
 }
 
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 .secondary-btn {
     background-color: #555;
@@ -723,4 +723,65 @@ body.light-mode {
 #v5ResultText {
     color: var(--message-color) !important;
     transition: color 0.3s ease;
+}
+
+.accordion-btn {
+    width: 100%;
+    background: var(--card-bg);
+    color: var(--text-color);
+    padding: 15px;
+    border: none;
+    text-align: left;
+    border-bottom: 1px solid var(--die-bg);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+
+.sub-accordion { background: #3a3a3a; font-size: 0.9rem; }
+
+.info-item {
+    padding: 10px 25px;
+    cursor: pointer;
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    display: flex; align-items: center; justify-content: center;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+/* Replace the old .hidden rule with this */
+.hidden {
+    display: none;
+}
+
+/* Ensure the modal stays hidden even without !important */
+.modal.hidden {
+    display: none;
+}
+
+.accordion-btn.active + .accordion-panel {
+    display: block !important;
+}
+
+/* Optional: Add a little indentation to the sub-buttons so they look like a submenu */
+.accordion-panel .sub-btn {
+    padding-left: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--die-bg);
 }

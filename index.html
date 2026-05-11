@@ -15,6 +15,7 @@
             <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
     </button>
+    
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <h3>Menu</h3>
@@ -28,7 +29,7 @@
                     <span class="slider round"></span>
                 </label>
             </div>
-                <div class="sidebar-item toggle-item">
+            <div class="sidebar-item toggle-item">
                 <span>Light Mode</span>
                 <label class="switch">
                     <input type="checkbox" id="themeToggle">
@@ -46,10 +47,18 @@
             <button class="sidebar-item">Character Presets</button>
             <button class="sidebar-item">Dice Log</button>
             <button class="sidebar-item">App Settings</button>
+
+            <div class="sidebar-item">
+                <button class="accordion-btn" id="detailsAccordion">
+                    Details <span class="arrow" style="transition: transform 0.3s;">▼</span>
+                </button>
+                <div id="detailsPanel" class="accordion-panel hidden">
+                    <button class="nav-item sub-btn" data-target="page-v5-details" style="width: 100%; margin-top: 5px;">Vampire</button>
+                    <button class="nav-item sub-btn" data-target="page-w20-details" style="width: 100%; margin-top: 5px;">Werewolf</button>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div id="overlay" class="overlay"></div>
 
     <nav class="app-nav">
         <button class="nav-item active" data-target="page-w20">
@@ -69,6 +78,7 @@
     <div class="main-layout">
         
         <div class="container" id="mainContainer">
+            
             <div id="page-w20" class="tab-page active">
                 <h1>Werewolf The Apocalypse W20 - Dice Roller</h1>
                 <div class="controls">
@@ -135,10 +145,24 @@
                     <button id="v5ConfirmWpBtn" class="explode-btn hidden">Confirm Reroll</button>
                 </div>
             </div>
+
+            <div id="page-v5-details" class="tab-page">
+                <div class="details-container">
+                    <h2 class="accent-text">Vampire Reference</h2>
+                    <div id="v5-details-accordion-root"></div>
+                </div>
+            </div>
+
+            <div id="page-w20-details" class="tab-page">
+                <div class="details-container">
+                    <h2 class="accent-text">Werewolf Reference</h2>
+                    <p>W20 Details coming soon...</p>
+                </div>
+            </div>
+
         </div>
 
         <div id="secondaryPanel" class="secondary-panel hidden">
-            
             <div id="dropZone" class="drop-zone">
                 <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -160,12 +184,22 @@
                     <p>Your browser does not support PDFs. <a href="#">Download the PDF</a>.</p>
                 </object>
             </div>
-
         </div>
 
     </div>
 
+    <div id="overlay" class="overlay"></div>
+    
+    <div id="infoModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <p id="modalBody"></p>
+        </div>
+    </div>
+
     <script type="module" src="main.js"></script>
+    <script type="module" src="details.js"></script>
     <script type="module" src="w20.js"></script>
     <script type="module" src="v5.js"></script>
 </body>

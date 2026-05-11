@@ -1,0 +1,27 @@
+{
+  "vampire": {
+    "Clans": [
+      { "name": "Bruzah", "desc": "Philosopher-kings and rebels driven by fiery passion." },
+      { "name": "Ventrue", "desc": "The kings of Kindred society, obsessed with lineage and control." }
+    ],
+    "Predator Types": [
+      { "name": "Alleycat", "desc": "You take what you need by force or threat." },
+      { "name": "Sandman", "desc": "You feed on sleeping victims." }
+    ],
+    "Disciplines": [
+      {
+        "category": "Celerity",
+        "powers": [
+          { "name": "Cat's Grace", "desc": "Automatically keep your balance on narrow surfaces." },
+          { "name": "Rapid Reflexes", "desc": "React to danger with preternatural speed." }
+        ]
+      },
+      {
+        "category": "Potence",
+        "powers": [
+          { "name": "Lethal Body", "desc": "Your unarmed strikes can be deadly." }
+        ]
+      }
+    ]
+  }
+}
