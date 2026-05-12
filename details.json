@@ -2,11 +2,30 @@
   "vampire": {
     "Clans": [
       { "name": "Bruzah", "desc": "Philosopher-kings and rebels driven by fiery passion." },
-      { "name": "Ventrue", "desc": "The kings of Kindred society, obsessed with lineage and control." }
+      { "name": "Ventrue", "desc": "The kings of Kindred society, obsessed with lineage and control." },
+      { "name": "Gangrel", "desc": "Nomadic and feral, attuned to the wilderness and survival." },
+      { "name": "Malkavian", "desc": "Mad seers and prophets, cursed with insight and insanity." },
+      { "name": "Nosferatu", "desc": "Hideous and secretive, masters of stealth and information." },
+      { "name": "Toreador", "desc": "Artists and aesthetes, captivated by beauty and passion." },
+      { "name": "Tremere", "desc": "Scholars of blood magic, seeking power through arcane knowledge." },
+      { "name": "Lasombra", "desc": "Shadow manipulators, leaders of the Sabbat sect." },
+      { "name": "Assamite", "desc": "Deadly assassins, feared for their skill and ruthlessness." },
+      { "name": "Giovanni", "desc": "Necromancers and financiers, masters of death and commerce." },
+      { "name": "Ravnos", "desc": "Tricksters and wanderers, known for their illusions and nomadic lifestyle." },
+      { "name": "Followers of Set", "desc": "Cultists of the serpent god, corrupting others with their influence." },
+      { "name": "Salubri", "desc": "Healers and mystics, rare and often hunted by other Kindred." },
+      { "name": "Thinbloods", "desc": "The lowest caste of vampires, often struggling to survive and find their place in Kindred society." },
+      { "name": "Hecata", "desc": "A clan of necromancers and death-worshippers, formed from the union of the Giovanni and the Salubri." },
+      { "name": "Catiff", "desc": "Outcasts" },
+      { "name": "Independent", "desc": "Vampires who do not belong to any clan, often forging their own path in the world." }
+
+
     ],
     "Predator Types": [
       { "name": "Alleycat", "desc": "You take what you need by force or threat." },
-      { "name": "Sandman", "desc": "You feed on sleeping victims." }
+      { "name": "Sandman", "desc": "You feed on sleeping victims." },
+      { "name": "Scene Queen", "desc": "You thrive in social settings, using charm and influence to feed." },
+      { "name": "Siren", "desc": "You use your allure and charm to captivate and feed on your victims." }
     ],
     "Disciplines": [
       {
@@ -20,6 +39,55 @@
         "category": "Potence",
         "powers": [
           { "name": "Lethal Body", "desc": "Your unarmed strikes can be deadly." }
+        ]
+      },
+      {
+        "category": "Dominate",
+        "powers": [
+          { "name": "Command", "desc": "Issue a simple command to a target." },
+          { "name": "Mesmerize", "desc": "Make a target forget something or someone." }
+        ]
+      },
+      {
+        "category": "Obfuscate",
+        "powers": [
+          { "name": "Cloak of Shadows", "desc": "Become invisible in shadows." },
+          { "name": "Vanish", "desc": "Disappear from sight for a short time." }
+        ]
+      },
+      {
+        "category": "Auspex",
+        "powers": [
+          { "name": "Heightened Senses", "desc": "Gain enhanced senses to perceive the world around you." },
+          { "name": "Aura Perception", "desc": "See the auras of living beings, revealing their emotions and intentions." }
+        ]
+      },
+      {
+        "category": "Blood Sorcery",
+        "powers": [
+          { "name": "Blood Bond", "desc": "Create a mystical bond with another being through blood." },
+          { "name": "Blood Puppet", "desc": "Control a target's actions by manipulating their blood." }
+        ]
+      },
+      {
+        "category": "Fortitude",
+        "powers": [
+          { "name": "Resilience", "desc": "Gain resistance to physical damage." },
+          { "name": "Unbreakable Will", "desc": "Resist mental and emotional attacks." }
+        ]
+      },
+      {
+        "category": "Presence",
+        "powers": [
+          { "name": "Dread Gaze", "desc": "Instill fear in a target with your gaze." },
+          { "name": "Entrancement", "desc": "Captivate a target, making them more susceptible to your influence." }
+        ]
+      },
+      {
+        "category": "Animalism",
+        "powers": [
+          { "name": "Feral Whispers", "desc": "Communicate with animals and command them." },
+          { "name": "Beastial Strength", "desc": "Gain the strength of a wild animal." }
         ]
       }
     ]
