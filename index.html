@@ -51,7 +51,7 @@
 
     <div id="overlay" class="overlay"></div>
 
-    <nav class="app-nav">
+<nav class="app-nav">
         <button class="nav-item active" data-target="page-w20">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -63,6 +63,16 @@
                 <path d="M12 2.69l5.74 5.74c3.12 3.12 3.12 8.19 0 11.31C16.18 21.31 14.09 22.08 12 21.31c-2.09.77-4.18 0-5.74-1.56-3.12-3.12-3.12-8.19 0-11.31L12 2.69z"></path>
             </svg>
             <span>V5</span>
+        </button>
+        <button class="nav-item" data-target="page-dw">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="22" y1="12" x2="18" y2="12"></line>
+                <line x1="6" y1="12" x2="2" y2="12"></line>
+                <line x1="12" y1="6" x2="12" y2="2"></line>
+                <line x1="12" y1="22" x2="12" y2="18"></line>
+            </svg>
+            <span>DW</span>
         </button>
     </nav>
 
@@ -135,6 +145,43 @@
                     <button id="v5ConfirmWpBtn" class="explode-btn hidden">Confirm Reroll</button>
                 </div>
             </div>
+            <div id="page-dw" class="tab-page hidden">
+                <div style="text-align: center; margin-top: 10px; margin-bottom: 20px;">
+                    <h2 style="margin-bottom: 5px;">Deathwatch Roller</h2>
+                    <span style="color: #666; font-size: 0.9rem;">Deathwatch & General Utility</span>
+                </div>
+
+               <div class="dice-input-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; color: var(--accent); font-size: 0.9rem;">Quantity:</label>
+                        <input type="number" id="dwQty" value="1" min="1" max="20" style="width: 100%; box-sizing: border-box; padding: 10px; background: var(--die-bg); border: 1px solid #555; color: white; border-radius: 4px;">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; color: var(--accent); font-size: 0.9rem;">Die Type:</label>
+                        <select id="dwType" style="width: 100%; box-sizing: border-box; padding: 10px; background: var(--die-bg); border: 1px solid #555; color: white; border-radius: 4px; height: 38px;">
+                            <option value="6">d6</option>
+                            <option value="8">d8</option>
+                            <option value="10">d10</option>
+                            <option value="12">d12</option>
+                            <option value="20">d20</option>
+                            <option value="100" selected>d100</option>
+                        </select>
+                    </div>
+                </div>
+
+                    <div id="dwTargetSection" style="margin-bottom: 15px;">
+                        <label for="dwTarget" style="display: block; margin-bottom: 8px; color: var(--accent);">Target (d100 only):</label>
+                        <input type="number" id="dwTarget" value="50" min="1" max="120" style="width: 100%; padding: 10px; background: var(--die-bg); border: 1px solid #555; color: white; border-radius: 4px;">
+                    </div>
+
+                    <button id="dwRollBtn" class="action-btn" style="width: 100%; background-color: var(--accent); color: white; border: none; padding: 15px; border-radius: 4px; font-size: 1.1rem; cursor: pointer; font-weight: bold;">
+                        Roll Dice
+                    </button>
+                </div>
+
+                <div id="dwResultText" class="result-text" style="margin-top: 20px; text-align: center; font-size: 1.2rem; min-height: 60px;"></div>
+            </div>
         </div>
 
         <div id="secondaryPanel" class="secondary-panel hidden">
@@ -168,5 +215,6 @@
     <script type="module" src="main.js"></script>
     <script type="module" src="w20.js"></script>
     <script type="module" src="v5.js"></script>
+    <script type="module" src="dw.js"></script>
 </body>
 </html>
